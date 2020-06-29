@@ -1,0 +1,43 @@
+@page "/fetchrecipes"
+@using BlazorAppWASM.Shared.BusinessDomain
+@using BlazorAppWASM.Shared.Constants
+@inject HttpClient Http
+
+<h1>Bread recipes</h1>
+
+<p>These are the bread recipes.</p>
+
+@if (recipes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Added</th>                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var recipe in recipes)
+            {
+                <tr>
+                    <td>@recipe.Name</td>                    
+                    <td>@recipe.CreatedAt.ToString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+	private Recipe[] recipes;
+
+	protected override async Task OnInitializedAsync()
+	{
+		recipes = await Http.GetFromJsonAsync<Recipe[]>("Recipes");
+	}
+
+}
