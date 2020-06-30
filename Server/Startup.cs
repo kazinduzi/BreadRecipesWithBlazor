@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using BlazorAppWASM.Server.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAppWASM.Server
 {
@@ -23,13 +24,20 @@ namespace BlazorAppWASM.Server
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddDbContext<BreadRecipesDbContext>(opt => opt.UseSqlite(
+					Configuration.GetConnectionString("BreadRecipeConnectionString"))
+				);
 
-			services.AddControllersWithViews();
+			services.AddControllersWithViews()
+					.AddNewtonsoftJson(options =>
+					options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+				);
+
 			services.AddRazorPages();
 
 			// Add DiC, Mocking
-			services.AddTransient<IRecipeRepository, MockRecipeRepository>();
-			//services.AddTransient<IRecipeRepository, RecipeRepository>();
+			//services.AddTransient<IRecipeRepository, MockRecipeRepository>();
+			services.AddTransient<IRecipeRepository, RecipeRepository>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

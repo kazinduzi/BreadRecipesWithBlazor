@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorAppWASM.Shared.BusinessDomain
 {
-	public class BaseEntity
+	public abstract class BaseEntity
 	{
 		[Key]
 		public int ObjectId { get; set; }

@@ -6,8 +6,6 @@ namespace BlazorAppWASM.Server.Data
 {
 	public interface IRecipeRepository
 	{
-		bool saveChanges();
-
 		IEnumerable<Recipe> GetRecipes();
 
 		Recipe GetRecipeById(int id);

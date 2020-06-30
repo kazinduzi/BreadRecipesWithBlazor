@@ -13,6 +13,6 @@ namespace BlazorAppWASM.Shared.BusinessDomain
 
 		public HealthyLabel HealthyLabel { get; set; }
 
-		public IEnumerable<Ingredient> Ingredients { get; set; }
+		public ICollection<Ingredient> Ingredients { get; set; }
 	}
 }

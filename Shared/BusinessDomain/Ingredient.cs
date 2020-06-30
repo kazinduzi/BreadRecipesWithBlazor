@@ -9,5 +9,9 @@ namespace BlazorAppWASM.Shared.BusinessDomain
 
 		[StringLength(100)]
 		public string Amount { get; set; }
+
+		public int RecipeId { get; set; }
+
+		public Recipe Recipe { get; set; }
 	}
 }

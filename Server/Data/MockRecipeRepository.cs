@@ -68,11 +68,6 @@ namespace BlazorAppWASM.Server.Data
 			return _recipes;
 		}
 
-		public bool saveChanges()
-		{
-			throw new NotImplementedException();
-		}
-
 		public void UpdateRecipe(int id, Recipe recipe)
 		{
 			throw new NotImplementedException();
