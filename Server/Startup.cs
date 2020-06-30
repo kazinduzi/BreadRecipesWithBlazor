@@ -35,8 +35,9 @@ namespace BlazorAppWASM.Server
 
 			services.AddRazorPages();
 
-			// Add DiC, Mocking
+			// Add DependencyInjection for Mocking
 			//services.AddTransient<IRecipeRepository, MockRecipeRepository>();
+
 			services.AddTransient<IRecipeRepository, RecipeRepository>();
 		}
 
@@ -45,6 +46,12 @@ namespace BlazorAppWASM.Server
 		{
 			if (env.IsDevelopment())
 			{
+				using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+				{
+					var context = serviceScope.ServiceProvider.GetRequiredService<BreadRecipesDbContext>();
+					context.Database.EnsureCreated();
+				}
+
 				app.UseDeveloperExceptionPage();
 				app.UseWebAssemblyDebugging();
 			}
