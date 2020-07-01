@@ -1,0 +1,32 @@
+﻿@page "/UploadFiles"
+@using BlazorInputFile
+@using System.IO
+@inject HttpClient client
+
+<h1>Blazor WebAssembly: Upload file</h1>
+
+<InputFile OnChange="HandleUploadFile"></InputFile>
+
+<p>@status</p>
+
+@code {
+	string status;
+
+	public async Task HandleUploadFile(IFileListEntry[] files)
+	{
+		var file = files.FirstOrDefault();
+		if (file != null)
+		{
+			using var ms = new MemoryStream();
+			await file.Data.CopyToAsync(ms);
+
+			status = $"Upload {file.Size} bytes from {file.Name}";
+			var fileContent = new MultipartFormDataContent()
+			{
+				{ new ByteArrayContent(ms.GetBuffer()), "\"Upload\"", file.Name }
+			};
+
+			await client.PostAsync("Upload", fileContent);
+		}
+	}
+}
