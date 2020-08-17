@@ -9,7 +9,7 @@
 	[Parameter]
 	public int Id { get; set; }
 
-	private Recipe Recipe = null;
+	private Recipe Recipe = new Recipe();
 
 	protected override async Task OnInitializedAsync()
 	{
