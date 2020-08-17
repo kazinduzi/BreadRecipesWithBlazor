@@ -1,13 +1,15 @@
 @page "/fetchrecipes"
+@page "/recipes"
 @using BlazorAppWASM.Shared.BusinessDomain
 @using BlazorAppWASM.Shared.Constants
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 
 <h1>Bread recipes</h1>
 
 <p>These are the bread recipes.</p>
 
-@if (recipes == null)
+@if (allRecipes == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -17,15 +19,17 @@ else
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Added</th>                
+                <th>Added</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var recipe in recipes)
+            @foreach (var recipe in allRecipes)
             {
                 <tr>
                     <td>@recipe.Name</td>                    
-                    <td>@recipe.CreatedAt.ToString()</td>
+                    <td>@recipe.CreatedAt.ToShortDateString()</td>
+                    <td><button class="btn btn-link" @onclick="() => Navigate(recipe.ObjectId)">Open</button></td>
                 </tr>
             }
         </tbody>
@@ -33,11 +37,16 @@ else
 }
 
 @code {
-	private Recipe[] recipes;
+	private Recipe[] allRecipes;
 
 	protected override async Task OnInitializedAsync()
 	{
-		recipes = await Http.GetFromJsonAsync<Recipe[]>("Recipes");
+		allRecipes = await Http.GetFromJsonAsync<Recipe[]>("Recipes");
+	}
+
+	protected void Navigate(int Id)
+	{
+		NavigationManager.NavigateTo($"/recipe/{Id}");
 	}
 
 }

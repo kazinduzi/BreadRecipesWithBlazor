@@ -1,0 +1,18 @@
+﻿@page "/recipe/{id:int}"
+@inject HttpClient client
+@using BlazorAppWASM.Shared.BusinessDomain;
+ 
+<h3>@Recipe.Name</h3>
+<p>@Recipe.ObjectId</p>
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+
+	private Recipe Recipe = new Recipe();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Recipe = await client.GetFromJsonAsync<Recipe>($"Recipes/{Id}");
+	}
+}
