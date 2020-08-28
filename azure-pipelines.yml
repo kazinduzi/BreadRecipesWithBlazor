@@ -27,3 +27,19 @@ stages:
       inputs:
         command: 'build'
         projects: '**/BlazorAppWASM.Server.csproj'
+
+- stage: Publish
+  displayName: Publish
+  
+  jobs:
+    - job: Publish
+      displayName: Publish
+      pool:
+        vmImage: $(vmImageName)
+      
+      steps:
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
