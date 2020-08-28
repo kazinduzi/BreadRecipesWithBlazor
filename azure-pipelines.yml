@@ -1,45 +1,32 @@
 trigger:
-  branches:
-    include:
-    - master
-  paths:
-    exclude:
-    - azure-pipelines.yml
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
-  vmImageName: 'ubuntu-latest'
 
-stages:
-- stage: Build
-  displayName: Build stage
+steps:
 
-  jobs:
-  - job: Build
-    displayName: Build
-
-    pool:
-      vmImage: $(vmImageName)
-
-    steps:
-    - task: DotNetCoreCLI@2
-      displayName: Build Server
+    - task: UseDotNet@2 
+      displayName: ".NET Core 3.1.x"
       inputs:
-        command: 'build'
-        projects: '**/BlazorAppWASM.Server.csproj'
+        version: '3.1.x'
+        packageType: sdk
+    - script: dotnet build --configuration $(buildConfiguration)
+      displayName: 'dotnet build $(buildConfiguration)'
+    
+    - task: DotNetCoreCLI@2
+      displayName: "Publish"
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: true
 
-- stage: Publish
-  displayName: Publish
-  
-  jobs:
-    - job: Publish
-      displayName: Publish
-      pool:
-        vmImage: $(vmImageName)
-      
-      steps:
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'drop'
-          publishLocation: 'Container'
+    - task: PublishBuildArtifacts@1
+      displayName: "Upload Artifacts"
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+        artifactName: 'hanselminutes'
