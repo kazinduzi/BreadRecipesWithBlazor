@@ -26,29 +26,5 @@ stages:
       displayName: Build Server
       inputs:
         command: 'build'
-        projects: '**/DevOpsBlazor.Server.csproj'    
+        projects: '**/BlazorAppWASM.Server.csproj'    
 
-- stage: Release
-  displayName: Release stage
-
-  jobs:
-  - job: Release
-    displayName: Release to Azure
-
-    pool:
-      vmImage: $(vmImageName)
-
-    steps:
-    - task: DotNetCoreCLI@2
-      displayName: Publish the project
-      inputs:
-        command: 'publish'
-        publishWebProjects: true
-
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: '<your subscription info>'
-        appType: 'webApp'
-        WebAppName: 'DevOpsBlazor-Test'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
