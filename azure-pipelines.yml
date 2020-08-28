@@ -14,25 +14,10 @@ steps:
   inputs:
     version: '3.1.102'
 
-- script: dotnet build --configuration $(buildConfiguration) ReusableComponents/ReusableComponents.sln
+- script: dotnet build --configuration $(buildConfiguration) BlazorAppWASM.sln
   displayName: 'dotnet build $(buildConfiguration) ReusableComponents'
-- script: dotnet publish --output $(Build.ArtifactStagingDirectory)/ReusableComponents ReusableComponents/ReusableComponents.sln
+- script: dotnet publish --output $(Build.ArtifactStagingDirectory)/BlazorAppWASM.sln
   displayName: 'dotnet publish ReusableComponents'
-
-- script: dotnet build --configuration $(buildConfiguration) MvvmPattern/MvvmPattern.sln
-  displayName: 'dotnet build $(buildConfiguration) MvvmPattern'
-- script: dotnet publish --output $(Build.ArtifactStagingDirectory)/MvvmPattern MvvmPattern/MvvmPattern.sln
-  displayName: 'dotnet publish MvvmPattern'
-
-- script: dotnet build --configuration $(buildConfiguration) LibrariesInterop/LibrariesInterop.sln
-  displayName: 'dotnet build $(buildConfiguration) LibrariesInterop'
-- script: dotnet publish --output $(Build.ArtifactStagingDirectory)/LibrariesInterop LibrariesInterop/LibrariesInterop.sln
-  displayName: 'dotnet publish LibrariesInterop'
-
-- script: dotnet build --configuration $(buildConfiguration) CodeBehind/CodeBehind.sln
-  displayName: 'dotnet build $(buildConfiguration) CodeBehind'
-- script: dotnet publish --output $(Build.ArtifactStagingDirectory)/CodeBehind CodeBehind/CodeBehind.sln
-  displayName: 'dotnet publish CodeBehind'
 
 - task: PublishBuildArtifacts@1
   inputs:
