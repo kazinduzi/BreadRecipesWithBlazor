@@ -15,9 +15,9 @@ steps:
     version: '3.1.102'
 
 - script: dotnet build --configuration $(buildConfiguration) BlazorAppWASM.sln
-  displayName: 'dotnet build $(buildConfiguration) ReusableComponents'
+  displayName: 'dotnet build $(buildConfiguration) BlazorAppWASM'
 - script: dotnet publish --output $(Build.ArtifactStagingDirectory)/BlazorAppWASM.sln
-  displayName: 'dotnet publish ReusableComponents'
+  displayName: 'dotnet publish BlazorAppWASM'
 
 - task: PublishBuildArtifacts@1
   inputs:
