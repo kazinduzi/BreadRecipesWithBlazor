@@ -26,5 +26,4 @@ stages:
       displayName: Build Server
       inputs:
         command: 'build'
-        projects: '**/BlazorAppWASM.Server.csproj'    
-
+        projects: '**/BlazorAppWASM.Server.csproj'
