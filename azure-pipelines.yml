@@ -1,24 +1,54 @@
-# ASP.NET Core
-
 trigger:
-- master
-
-pool:
-  vmImage: 'Ubuntu-16.04'
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - azure-pipelines.yml
 
 variables:
   buildConfiguration: 'Release'
+  vmImageName: 'ubuntu-latest'
 
-steps:
-- task: UseDotNet@2
-  inputs:
-    version: '3.1.102'
+stages:
+- stage: Build
+  displayName: Build stage
 
-- script: dotnet build --configuration $(buildConfiguration) BlazorAppWASM.sln
-  displayName: 'dotnet build $(buildConfiguration) BlazorAppWASM'
-- script: dotnet publish --output $(Build.ArtifactStagingDirectory)/BlazorAppWASM.sln
-  displayName: 'dotnet publish BlazorAppWASM'
+  jobs:
+  - job: Build
+    displayName: Build
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    ArtifactName: 'blazordist'
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Build Server
+      inputs:
+        command: 'build'
+        projects: '**/DevOpsBlazor.Server.csproj'    
+
+- stage: Release
+  displayName: Release stage
+
+  jobs:
+  - job: Release
+    displayName: Release to Azure
+
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Publish the project
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: '<your subscription info>'
+        appType: 'webApp'
+        WebAppName: 'DevOpsBlazor-Test'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
