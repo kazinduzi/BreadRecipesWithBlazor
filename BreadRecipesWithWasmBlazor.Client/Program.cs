@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using BreadRecipesWithWasmBlazor.Client.AuthProviders;
+using Microsoft.AspNetCore.Components.Authorization;
 
-namespace KazinduziBlazorWasm.Client
+namespace BreadRecipesWithWasmBlazor.Client
 {
 	public class Program
 	{
@@ -18,6 +20,10 @@ namespace KazinduziBlazorWasm.Client
 			builder.RootComponents.Add<App>("app");
 
 			builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+			//Register Authorization
+			builder.Services.AddAuthorizationCore();
+			builder.Services.AddScoped<AuthenticationStateProvider, TestAuthStateProvider>();
 
 			await builder.Build().RunAsync();
 		}
