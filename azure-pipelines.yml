@@ -24,6 +24,7 @@ steps:
         publishWebProjects: false
         arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
         zipAfterPublish: true
+        modifyOutputPath: true
 
     - task: PublishBuildArtifacts@1
       displayName: "Upload Artifacts"
