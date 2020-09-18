@@ -21,7 +21,7 @@ namespace AccountOwnerServer
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					if (env == EnvironmentName.Staging || env == EnvironmentName.Production){
-						builder.UseIIS();
+						webBuilder.UseIIS();
 					}
 					webBuilder.UseStartup<Startup>();
 				});
