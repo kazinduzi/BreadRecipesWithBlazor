@@ -31,7 +31,12 @@ namespace AccountOwnerServer
 				.UseMySql(Configuration.GetConnectionString("MyDefaultConnection"), mySqlOptions => mySqlOptions					
 					.ServerVersion(new Version(8, 0, 18), ServerType.MySql)
 			));
-
+			
+			services.Configure<IISServerOptions>(options => 
+			{
+			    options.AutomaticAuthentication = false;
+			});
+			
 			services.ConfigureLoggerService();
 			services.ConfigureCors();
 			
