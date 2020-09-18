@@ -20,7 +20,9 @@ namespace AccountOwnerServer
 			Host.CreateDefaultBuilder(args)
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
-					if (env == EnvironmentName.Staging || env == EnvironmentName.Production){
+					var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+					if (env == "Staging" || env == "Production")
+					{
 						webBuilder.UseIIS();
 					}
 					webBuilder.UseStartup<Startup>();
