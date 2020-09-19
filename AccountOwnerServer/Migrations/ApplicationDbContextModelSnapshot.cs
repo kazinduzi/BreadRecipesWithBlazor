@@ -52,14 +52,17 @@ namespace AccountOwnerServer.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("DurationInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HealthyStatus")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<int>("healthyStatus")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

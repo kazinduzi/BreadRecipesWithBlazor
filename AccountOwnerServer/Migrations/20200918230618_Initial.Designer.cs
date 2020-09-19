@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AccountOwnerServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200918005747_Add healthy status")]
-    partial class Addhealthystatus
+    [Migration("20200918230618_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

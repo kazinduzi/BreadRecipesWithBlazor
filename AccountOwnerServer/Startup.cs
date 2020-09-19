@@ -43,8 +43,11 @@ namespace AccountOwnerServer
 			services.AddControllers();
 		}
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
 		{
+			// migrate any database changes on startup (includes initial db creation)
+			dbContext.Database.Migrate();
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();

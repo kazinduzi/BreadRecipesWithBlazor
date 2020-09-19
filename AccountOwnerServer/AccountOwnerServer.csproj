@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200918231123_Added_Recipe_Duration.cs" />
+    <Compile Remove="Migrations\20200918231123_Added_Recipe_Duration.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
   </ItemGroup>
 

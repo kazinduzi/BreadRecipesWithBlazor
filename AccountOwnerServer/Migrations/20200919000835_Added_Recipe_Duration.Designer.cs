@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AccountOwnerServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200917234236_Initial-migration-recipe-ingredient")]
-    partial class Initialmigrationrecipeingredient
+    [Migration("20200919000835_Added_Recipe_Duration")]
+    partial class Added_Recipe_Duration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,6 +53,12 @@ namespace AccountOwnerServer.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("DurationInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HealthyStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
