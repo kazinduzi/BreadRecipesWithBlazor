@@ -46,7 +46,7 @@ namespace AccountOwnerServer
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
 		{
 			// migrate any database changes on startup (includes initial db creation)
-			dbContext.Database.Migrate();
+			//dbContext.Database.Migrate();
 
 			if (env.IsDevelopment())
 			{
