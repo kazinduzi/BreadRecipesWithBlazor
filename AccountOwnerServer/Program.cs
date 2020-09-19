@@ -16,17 +16,11 @@ namespace AccountOwnerServer
 			CreateHostBuilder(args).Build().Run();
 		}
 
-		public static IHostBuilder CreateHostBuilder(string[] args) => 
+		public static IHostBuilder CreateHostBuilder(string[] args) =>
 			Host.CreateDefaultBuilder(args)
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
-					var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-					if (env == "Staging" || env == "Production")
-					{
-						webBuilder.UseIIS();
-					}
 					webBuilder.UseStartup<Startup>();
 				});
-			
 	}
 }

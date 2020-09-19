@@ -31,23 +31,15 @@ namespace AccountOwnerServer
 				.UseMySql(Configuration.GetConnectionString("MyDefaultConnection"), mySqlOptions => mySqlOptions					
 					.ServerVersion(new Version(8, 0, 18), ServerType.MySql)
 			));
-			
-			services.Configure<IISServerOptions>(options => 
-			{
-			    options.AutomaticAuthentication = false;
-			});
-			
+
 			services.ConfigureLoggerService();
 			services.ConfigureCors();
 			
 			services.AddControllers();
 		}
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-			// migrate any database changes on startup (includes initial db creation)
-			//dbContext.Database.Migrate();
-
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
