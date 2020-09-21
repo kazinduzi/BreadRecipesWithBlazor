@@ -30,10 +30,7 @@ namespace AccountOwnerServer
 			services.AddDbContextPool<ApplicationDbContext>(options => options				
 				.UseMySql(Configuration.GetConnectionString("MyDefaultConnection"), mySqlOptions => mySqlOptions					
 					.ServerVersion(new Version(5, 7, 9), ServerType.MySql)
-					.EnableRetryOnFailure(
-						maxRetryCount: 10,
-						maxRetryDelay: TimeSpan.FromSeconds(30),
-						errorNumbersToAdd: null)
+					.EnableRetryOnFailure()
 
 			));
 
