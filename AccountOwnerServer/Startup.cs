@@ -33,8 +33,8 @@ namespace AccountOwnerServer
 					.EnableRetryOnFailure(
 						maxRetryCount: 10,
 						maxRetryDelay: TimeSpan.FromSeconds(30),
-						errorNumbersToAdd: null
-					)
+						errorNumbersToAdd: null)
+
 			));
 
 			services.ConfigureLoggerService();
