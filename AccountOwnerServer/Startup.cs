@@ -30,6 +30,7 @@ namespace AccountOwnerServer
 			services.AddDbContextPool<ApplicationDbContext>(options => options				
 				.UseMySql(Configuration.GetConnectionString("MyDefaultConnection"), mySqlOptions => mySqlOptions					
 					.ServerVersion(new Version(8, 0, 18), ServerType.MySql)
+					.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)
 			));
 
 			services.ConfigureLoggerService();
