@@ -30,6 +30,11 @@ namespace AccountOwnerServer
 			services.AddDbContextPool<ApplicationDbContext>(options => options				
 				.UseMySql(Configuration.GetConnectionString("MyDefaultConnection"), mySqlOptions => mySqlOptions					
 					.ServerVersion(new Version(8, 0, 18), ServerType.MySql)
+					.EnableRetryOnFailure(
+						maxRetryCount: 10,
+						maxRetryDelay: TimeSpan.FromSeconds(30),
+						errorNumbersToAdd: null
+					)
 			));
 
 			services.ConfigureLoggerService();
