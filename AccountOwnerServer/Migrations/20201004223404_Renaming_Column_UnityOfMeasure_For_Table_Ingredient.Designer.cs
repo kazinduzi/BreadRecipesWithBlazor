@@ -3,14 +3,16 @@ using System;
 using AccountOwnerServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AccountOwnerServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201004223404_Renaming_Column_UnityOfMeasure_For_Table_Ingredient")]
+    partial class Renaming_Column_UnityOfMeasure_For_Table_Ingredient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +34,6 @@ namespace AccountOwnerServer.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RecipeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UnityOfMeasure")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -42,8 +41,6 @@ namespace AccountOwnerServer.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RecipeId");
 
                     b.ToTable("Ingredients");
                 });
@@ -87,13 +84,6 @@ namespace AccountOwnerServer.Migrations
                     b.HasIndex("IngredientId");
 
                     b.ToTable("RecipeIngredients");
-                });
-
-            modelBuilder.Entity("AccountOwnerServer.Models.Ingredient", b =>
-                {
-                    b.HasOne("AccountOwnerServer.Models.Recipe", "Recipe")
-                        .WithMany("Ingredients")
-                        .HasForeignKey("RecipeId");
                 });
 
             modelBuilder.Entity("AccountOwnerServer.Models.RecipeIngredient", b =>

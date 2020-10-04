@@ -19,6 +19,10 @@ namespace AccountOwnerServer.Data
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Entity<Ingredient>()
+				.HasOne(i => i.Recipe)
+				.WithMany(r => r.Ingredients);
+
 			modelBuilder.Entity<RecipeIngredient>()
 				.HasKey(ri => new { ri.RecipeId, ri.IngredientId });
 		}

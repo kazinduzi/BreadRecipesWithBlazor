@@ -15,7 +15,12 @@ namespace BreadRecipesWithWasmBlazor.Client
 			var builder = WebAssemblyHostBuilder.CreateDefault(args);
 			builder.RootComponents.Add<App>("app");
 
-			builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+			builder.Services.AddScoped(sp => 
+			{
+				var apiUrl = new Uri(builder.Configuration["API:BaseUrl"]);
+				return new HttpClient { BaseAddress = apiUrl };			
+			});
 
 			//Register Authorization
 			builder.Services.AddAuthorizationCore();

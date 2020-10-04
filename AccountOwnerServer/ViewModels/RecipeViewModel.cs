@@ -2,16 +2,15 @@
 using System;
 using System.Collections.Generic;
 
-namespace AccountOwnerServer.Models
+namespace AccountOwnerServer.ViewModels
 {
-	public class Recipe
+	public class RecipeViewModel
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
+		public HealthyStatus HealthyStatus { get; set; }
 		public int DurationInMinutes { get; set; }
-		public HealthyStatus HealthyStatus { get; set; } = HealthyStatus.Healthy;
-		public ICollection<RecipeIngredient> RecipeIngredients { get; set; }
-		public ICollection<Ingredient> Ingredients { get; set; }
+		public IEnumerable<IngredientViewModel> Ingredients { get; set; }
 		public DateTime CreatedOn { get; set; }
 		public DateTime? UpdatedOn { get; set; }
 	}

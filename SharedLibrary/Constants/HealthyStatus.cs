@@ -1,4 +1,4 @@
-﻿namespace AccountOwnerServer.Models
+﻿namespace SharedLibrary.Constants
 {
 	public enum HealthyStatus
 	{

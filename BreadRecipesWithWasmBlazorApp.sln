@@ -5,11 +5,13 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BreadRecipesWithWasmBlazor.Client", "BreadRecipesWithWasmBlazor.Client\BreadRecipesWithWasmBlazor.Client.csproj", "{56539A25-260A-4E21-9E33-81C549CEC0ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountOwnerServer", "AccountOwnerServer\AccountOwnerServer.csproj", "{5ED2819A-2561-4CEE-A011-DFCD28DBC86C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountOwnerServer", "AccountOwnerServer\AccountOwnerServer.csproj", "{5ED2819A-2561-4CEE-A011-DFCD28DBC86C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{633D6DA5-1270-4B1D-9F20-1690E3E36C39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{633D6DA5-1270-4B1D-9F20-1690E3E36C39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerService", "LoggerService\LoggerService.csproj", "{B83C0DEE-95FC-4F84-9E19-D24470099550}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerService", "LoggerService\LoggerService.csproj", "{B83C0DEE-95FC-4F84-9E19-D24470099550}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLibrary", "SharedLibrary\SharedLibrary.csproj", "{26016097-2C43-4300-A89E-DADCFC343435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{B83C0DEE-95FC-4F84-9E19-D24470099550}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B83C0DEE-95FC-4F84-9E19-D24470099550}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B83C0DEE-95FC-4F84-9E19-D24470099550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26016097-2C43-4300-A89E-DADCFC343435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26016097-2C43-4300-A89E-DADCFC343435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26016097-2C43-4300-A89E-DADCFC343435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26016097-2C43-4300-A89E-DADCFC343435}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
