@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using AccountOwnerServer.Data;
 using AccountOwnerServer.Extensions;
+using Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -40,12 +41,15 @@ namespace AccountOwnerServer
 			services.AddControllers();
 		}
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
 		{
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
 			}
+
+			//app.ConfigureExceptionHandler(logger);
+			app.ConfigureCustomExceptionMiddleware();
 
 			app.UseHttpsRedirection();
 
