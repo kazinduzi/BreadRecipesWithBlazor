@@ -1,8 +1,26 @@
 ﻿@page "/recipe/{id:int}"
+@inject HttpClient Http
+@using ViewModels
 
-<h3>Recipe {@Id}</h3>
+@if (recipe == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<h3>@recipe.Name</h3>
+	<small>@recipe.CreatedOn.ToLongDateString()</small>
+}
+
 
 @code {
 	[Parameter]
 	public int Id { get; set; }
+
+	private RecipeModel recipe;
+
+	protected override async Task OnInitializedAsync()
+	{
+		recipe = await Http.GetFromJsonAsync<RecipeModel>($"/recipe/{Id}");
+	}
 }
