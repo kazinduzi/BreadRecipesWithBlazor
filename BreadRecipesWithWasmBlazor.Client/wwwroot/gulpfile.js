@@ -5,33 +5,22 @@
 
 const gulp = require('gulp');
 const sass = require('gulp-sass');
-const browserSync = require('browser-sync').create();
 
 const dirs = {
     scss: {
         src: 'Styles',
-        dest: 'wwwroot/css'
+        dest: 'css'
     }
 };
 
-const production = process.env.NODE_ENV === 'production';
-
-const stylesTask = function stylesTask(done) {
+const stylesTask = function stylesTask() {
     gulp.src(`${dirs.scss.src}/*.scss`)
         .pipe(sass().on('error', sass.logError))
-        .pipe(gulp.dest(dirs.scss.dest));
-
-    if (!production) {
-        browserSync.reload();
-        done();
-    }
+        .pipe(gulp.dest(dirs.scss.dest));    
 };
 
 const watchTask = function watchTask() {
-    browserSync.init({
-        proxy: "https://localhost:44391/"
-    });
-
+    
     gulp.watch(`${dirs.scss.src}/**/*.scss`, gulp.series(stylesTask));
 };
 
@@ -41,6 +30,9 @@ const buildTask = function buildTask() {
         resolve();
     });
 };
+
+
 gulp.task('styles', stylesTask);
 gulp.task('watch', watchTask);
 gulp.task('build', buildTask);
+gulp.task('default', buildTask);
