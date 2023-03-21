@@ -20,7 +20,6 @@ namespace AccountOwnerServer
 		public Startup(IConfiguration configuration)
 		{
 			LogManager.LoadConfiguration(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
-
 			Configuration = configuration;
 		}
 
