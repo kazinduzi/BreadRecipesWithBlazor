@@ -26,6 +26,8 @@ namespace AccountOwnerServer.Controllers
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<RecipeViewModel>>> Get()
 		{
+			var res = new List<RecipeViewModel>();
+			
 			var recipes = await _context.Recipes.AsNoTracking()
 				.Include(i => i.RecipeIngredients)
 				.Select(s => new RecipeViewModel

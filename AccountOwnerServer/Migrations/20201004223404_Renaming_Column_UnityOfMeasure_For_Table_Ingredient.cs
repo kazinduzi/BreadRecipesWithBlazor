@@ -25,7 +25,7 @@ namespace AccountOwnerServer.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "UnityMesure",
                 table: "Ingredients",
-                type: "longtext CHARACTER SET utf8mb4",
+                type: "text",
                 nullable: true);
         }
     }
