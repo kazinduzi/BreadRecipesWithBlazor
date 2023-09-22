@@ -13,7 +13,7 @@ namespace AccountOwnerServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     Quantity = table.Column<int>(nullable: false),
                     UnityMesure = table.Column<string>(nullable: true),
@@ -30,7 +30,7 @@ namespace AccountOwnerServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     healthyStatus = table.Column<int>(nullable: false),
                     CreatedOn = table.Column<DateTime>(nullable: false),

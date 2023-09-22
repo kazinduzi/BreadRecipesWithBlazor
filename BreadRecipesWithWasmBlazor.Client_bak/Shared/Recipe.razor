@@ -1,0 +1,38 @@
+﻿@page "/recipe/{id:int}"
+@inject HttpClient Http
+@using ViewModels
+
+@if (recipe == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<h2>@recipe.Name</h2>
+	<small>@recipe.CreatedOn.ToLongDateString()</small>
+	<h3>Ingredients</h3>
+	<ul>
+		@foreach(var ingredient in recipe.Ingredients)
+		{
+			<li>
+				<h5>@ingredient.Name</h5>
+				<div>
+					<strong>Quantity: </strong><span>@ingredient.Quantity @ingredient.UnityMeasure</span>
+				</div>				
+			</li>
+		}
+	</ul>
+}
+
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+
+	private RecipeModel recipe;
+
+	protected override async Task OnInitializedAsync()
+	{
+		recipe = await Http.GetFromJsonAsync<RecipeModel>($"/recipe/{Id}");
+	}
+}

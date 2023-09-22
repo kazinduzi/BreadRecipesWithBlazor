@@ -1,0 +1,47 @@
+﻿@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@*@using ViewModels*@
+
+<h3>Recipes</h3>
+@if (recipes == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Recipe</th>
+				<th>Healthy</th>
+				<th>Duration in minutes</th>
+				<th>Ingredients</th>
+				<th>Created</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var recipe in recipes)
+			{
+				<tr>
+					<td>
+						<a href="" @onclick="@(() => NavigateToRecipe(recipe.Id))" @onclick:preventDefault>@recipe.Name</a>
+					</td>
+					<td>@recipe.HealthyStatus</td>
+					<td>@recipe.DurationInMinutes</td>
+					<td>@recipe.Ingredients.Count()</td>
+					<td>@recipe.CreatedOn.ToShortDateString()</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	[Parameter]
+	public RecipeModel[] recipes { get; set; }	
+
+	private void NavigateToRecipe(int id)
+	{
+		NavigationManager.NavigateTo($"recipe/{id}");
+	}
+}
