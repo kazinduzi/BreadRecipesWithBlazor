@@ -1,8 +1,6 @@
-﻿using System.Text;
-
-namespace Contracts
+﻿namespace Contracts
 {
-	public interface ILoggerManager
+    public interface ILoggerManager
 	{
 		void LogInfo(string message);
 		void LogWarn(string message);
