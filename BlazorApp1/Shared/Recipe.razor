@@ -1,6 +1,5 @@
 ﻿@page "/recipe/{id:int}"
-@inject HttpClient Http
-@using ViewModels
+@inject IRecipeService RecipeService
 
 @if (recipe == null)
 {
@@ -33,6 +32,6 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		recipe = await Http.GetFromJsonAsync<RecipeModel>($"/recipe/{Id}");
+		recipe = await RecipeService.GetRecipeByIdAsync(Id);
 	}
 }
