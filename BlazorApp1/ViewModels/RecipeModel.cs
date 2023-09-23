@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace BreadRecipesWithWasmBlazor.Client.ViewModels
 {
-	public class RecipeModel
+    public class RecipeModel
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }

@@ -1,6 +1,5 @@
 ﻿@inject HttpClient Http
 @inject NavigationManager NavigationManager
-@using ViewModels
 
 <h3>Recipes</h3>
 @if (recipes == null)
@@ -38,7 +37,7 @@ else
 
 @code {
 	[Parameter]
-	public RecipeModel[] recipes { get; set; }	
+	public IEnumerable<RecipeModel> recipes { get; set; }	
 
 	private void NavigateToRecipe(int id)
 	{

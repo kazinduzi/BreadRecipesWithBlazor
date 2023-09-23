@@ -1,18 +1,18 @@
 ﻿@page "/"
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
-@using ViewModels
+@inject IRecipeService RecipeService
 
 <PageTitle>Index</PageTitle>
 
 <Recipes Recipes="@recipes" />
 
 @code {
-	private RecipeModel[] recipes;
+	private IEnumerable<RecipeModel>? recipes;
 
 	protected override async Task OnInitializedAsync()
 	{
-		recipes = await Http.GetFromJsonAsync<RecipeModel[]>("/recipe");
+		recipes = await RecipeService.GetRecipesAsync();		
 	}
 
 	private void NavigateToRecipe(int id)

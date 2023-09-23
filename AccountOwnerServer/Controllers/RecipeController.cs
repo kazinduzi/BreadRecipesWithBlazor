@@ -128,5 +128,24 @@ namespace AccountOwnerServer.Controllers
 
 			return false;
 		}
+
+		[HttpPut]
+		[Route("update/{id:int}")]
+		public async Task<ActionResult<bool>> UpdateRecipe(int id, [FromBody] RecipeInputModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var recipe = await _context.Recipes.FirstOrDefaultAsync(i => i.Id == id);
+				if (recipe != null)
+				{
+					recipe.Name = model.Name;
+					recipe.DurationInMinutes = model.DurationInMinutes;
+					recipe.HealthyStatus = model.HealthyStatus;
+					recipe.UpdatedOn = DateTime.UtcNow;
+					return await _context.SaveChangesAsync() > 0;
+				}
+			}
+			return false;
+		}
 	}
 }
