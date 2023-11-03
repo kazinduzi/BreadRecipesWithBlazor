@@ -18,8 +18,9 @@ namespace AccountOwnerServer
 	{
 		public Startup(IConfiguration configuration)
 		{
-			LogManager.LoadConfiguration(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
-			Configuration = configuration;
+			//LogManager.LoadConfiguration(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
+			LogManager.Setup().LoadConfigurationFromFile(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
+            Configuration = configuration;
 		}
 
 		public IConfiguration Configuration { get; }

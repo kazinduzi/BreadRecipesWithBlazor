@@ -5,6 +5,7 @@ using AccountOwnerServer.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace AccountOwnerServer.Controllers
     public class RecipeController : ControllerBase
 	{
 		private readonly ApplicationDbContext _context;
+		private static Logger _logger = LogManager.GetCurrentClassLogger();
 
 		public RecipeController(ApplicationDbContext context)
 		{

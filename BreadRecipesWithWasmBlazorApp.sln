@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerService", "LoggerServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedLibrary", "SharedLibrary\SharedLibrary.csproj", "{26016097-2C43-4300-A89E-DADCFC343435}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BreadRecipesWithWasmBlazor.Client", "BlazorApp1\BreadRecipesWithWasmBlazor.Client.csproj", "{8E0354D1-8A76-4A04-B28B-792216A0CD31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BreadRecipesWithWasmBlazor.Client", "BlazorApp1\BreadRecipesWithWasmBlazor.Client.csproj", "{8E0354D1-8A76-4A04-B28B-792216A0CD31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
