@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace AccountOwnerServer.Controllers
 {
+	/// <summary>
+	/// This is comment for cherry-picking in the master
+	/// </summary>
 	[ApiController]
     [Route("[controller]")]
     public class RecipeController : ControllerBase
