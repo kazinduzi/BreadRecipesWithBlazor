@@ -2,8 +2,20 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @using SharedLibrary.Constants
+@using System
+@using System.Net.Http
+@using System.Net.Http.Json
 
-<h3>Create Recipe</h3>
+<h3 class="mb-4">
+	<i class="oi oi-plus"></i> Create New Recipe
+</h3>
+
+@if (errorMessage != null)
+{
+	<div class="alert alert-danger" role="alert">
+		<strong>Error:</strong> @errorMessage
+	</div>
+}
 
 <EditForm Model="recipe" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -11,54 +23,79 @@
 
     <div class="form-row">
         <div class="form-group col-md-6">
-            <label>Name</label>
-            <InputText class="form-control" @bind-Value="recipe.Name" />
+            <label><strong>Recipe Name</strong></label>
+            <InputText class="form-control" @bind-Value="recipe.Name" placeholder="Enter recipe name" />
         </div>
         <div class="form-group col-md-3">
-            <label>Duration (min)</label>
+            <label><strong>Duration (minutes)</strong></label>
             <InputNumber class="form-control" @bind-Value="recipe.DurationInMinutes" />
         </div>
         <div class="form-group col-md-3">
-            <label>Health</label>
+            <label><strong>Health Status</strong></label>
             <InputSelect class="form-control" @bind-Value="recipe.HealthyStatus">
                 <option value="@HealthyStatus.Healthy">Healthy</option>
-                <option value="@HealthyStatus.NotHealthy">NotHealthy</option>
+                <option value="@HealthyStatus.NotHealthy">Not Healthy</option>
             </InputSelect>
         </div>
     </div>
 
-    <h5 class="mt-3">Ingredients</h5>
-    @for (var i = 0; i < ingredients.Count; i++)
-    {
-        <div class="form-row align-items-end">
-            <div class="form-group col-md-5">
-                <label>Name</label>
-                <InputText class="form-control" @bind-Value="ingredients[i].Name" />
-            </div>
-            <div class="form-group col-md-3">
-                <label>Quantity</label>
-                <InputNumber class="form-control" @bind-Value="ingredients[i].Quantity" />
-            </div>
-            <div class="form-group col-md-3">
-                <label>Unit</label>
-                <InputText class="form-control" @bind-Value="ingredients[i].UnityOfMeasure" />
-            </div>
-            <div class="form-group col-md-1">
-                <button type="button" class="btn btn-outline-danger btn-sm" @onclick="(()=>RemoveIngredient(i))">X</button>
-            </div>
+    <div class="ingredients-section mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0"><i class="oi oi-list"></i> Ingredients</h5>
+            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="AddIngredient">
+                <i class="oi oi-plus"></i> Add Ingredient
+            </button>
         </div>
-    }
-    <button type="button" class="btn btn-sm btn-secondary" @onclick="AddIngredient">Add Ingredient</button>
+        @if (ingredients.Count == 0)
+        {
+            <div class="alert alert-info">No ingredients added. Click "Add Ingredient" to get started.</div>
+        }
+        else
+        {
+            @for (var i = 0; i < ingredients.Count; i++)
+            {
+                <div class="ingredient-form-row mb-3">
+                    <div class="form-row align-items-end">
+                        <div class="form-group col-md-5">
+                            <label>Ingredient Name</label>
+                            <InputText class="form-control" @bind-Value="ingredients[i].Name" placeholder="e.g., Flour" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Quantity</label>
+                            <InputNumber class="form-control" @bind-Value="ingredients[i].Quantity" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Unit</label>
+                            <InputText class="form-control" @bind-Value="ingredients[i].UnityOfMeasure" placeholder="e.g., cups" />
+                        </div>
+                        <div class="form-group col-md-1">
+                            <button type="button" class="btn btn-outline-danger btn-sm w-100" @onclick="(()=>RemoveIngredient(i))" title="Remove ingredient">
+                                <i class="oi oi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
 
-    <div class="mt-4">
-        <button type="submit" class="btn btn-primary">Create</button>
-        <button type="button" class="btn btn-link text-light" @onclick="Cancel">Cancel</button>
+    <div class="form-actions mt-4 pt-3 border-top">
+        <button type="submit" class="btn btn-primary btn-lg" disabled="@isSaving">
+            @if (isSaving)
+            {
+                <span class="spinner-border spinner-border-sm mr-2" role="status"></span>
+            }
+            <i class="oi oi-check"></i> Create Recipe
+        </button>
+        <button type="button" class="btn btn-secondary btn-lg ml-2" @onclick="Cancel" disabled="@isSaving">Cancel</button>
     </div>
 </EditForm>
 
 @code {
     private RecipeInputModel recipe = new RecipeInputModel();
     private List<IngredientInputModel> ingredients = new List<IngredientInputModel>();
+    private bool isSaving = false;
+    private string errorMessage;
 
     protected override void OnInitialized()
     {
@@ -78,11 +115,29 @@
 
     private async Task HandleValidSubmit()
     {
-        recipe.Ingredients = ingredients.ToArray();
-        var resp = await Http.PostAsJsonAsync("api/recipe/create", recipe);
-        if (resp.IsSuccessStatusCode)
+        isSaving = true;
+        errorMessage = null;
+        try
         {
-            NavigationManager.NavigateTo("/");
+            recipe.Ingredients = ingredients.ToArray();
+            var resp = await Http.PostAsJsonAsync("api/recipe/create", recipe);
+            if (resp.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                var errorContent = await resp.Content.ReadAsStringAsync();
+                errorMessage = $"Failed to create recipe: {resp.StatusCode}. {errorContent}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while creating recipe: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
         }
     }
 
