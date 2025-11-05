@@ -10,7 +10,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		recipes = await Http.GetFromJsonAsync<RecipeModel[]>("/recipe");
+		recipes = await Http.GetFromJsonAsync<RecipeModel[]>("api/recipe");
 	}
 
 	private void NavigateToRecipe(int id)

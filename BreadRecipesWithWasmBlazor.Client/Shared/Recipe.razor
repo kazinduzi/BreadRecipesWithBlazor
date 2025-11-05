@@ -1,5 +1,6 @@
 ﻿@page "/recipe/{id:int}"
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 @using ViewModels
 
 @if (recipe == null)
@@ -8,17 +9,24 @@
 }
 else
 {
-	<h2>@recipe.Name</h2>
-	<small>@recipe.CreatedOn.ToLongDateString()</small>
+	<div class="d-flex align-items-center">
+		<div>
+			<h2 class="mb-0">@recipe.Name</h2>
+			<small class="text-muted">@recipe.CreatedOn.ToLongDateString()</small>
+		</div>
+		<div class="ml-auto">
+			<button class="btn btn-sm btn-primary" @onclick="Edit">Edit</button>
+		</div>
+	</div>
 	<h3>Ingredients</h3>
 	<ul>
-		@foreach(var ingredient in recipe.Ingredients)
+		@foreach (var ingredient in recipe.Ingredients)
 		{
 			<li>
 				<h5>@ingredient.Name</h5>
 				<div>
-					<strong>Quantity: </strong><span>@ingredient.Quantity @ingredient.UnityMeasure</span>
-				</div>				
+					<strong>Quantity: </strong><span>@ingredient.Quantity @ingredient.UnityOfMeasure</span>
+				</div>
 			</li>
 		}
 	</ul>
@@ -27,12 +35,17 @@ else
 
 @code {
 	[Parameter]
-	public int Id { get; set; }
+	public int id { get; set; }
 
 	private RecipeModel recipe;
 
 	protected override async Task OnInitializedAsync()
 	{
-		recipe = await Http.GetFromJsonAsync<RecipeModel>($"/recipe/{Id}");
+		recipe = await Http.GetFromJsonAsync<RecipeModel>($"api/recipe/{id}");
+	}
+
+	private void Edit()
+	{
+		NavigationManager.NavigateTo($"/recipe/{id}/edit");
 	}
 }

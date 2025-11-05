@@ -1,47 +1,73 @@
 ﻿@inject HttpClient Http
 @inject NavigationManager NavigationManager
 @using ViewModels
+@using SharedLibrary.Constants
+@using System
+@using System.Linq
 
-<h3>Recipes</h3>
+<div class="d-flex align-items-center mb-3">
+	<h3 class="mb-0 mr-2">Featured Recipes</h3>
+	<span class="badge badge-pill badge-warning">@recipes?.Length</span>
+	<div class="ml-auto">
+		<input class="form-control form-control-sm bg-dark text-light" placeholder="Search recipes..."
+			@bind="searchText" />
+	</div>
+	<div class="ml-2">
+		<button class="btn btn-sm btn-primary" @onclick="NavigateToCreate">Add Recipe</button>
+	</div>
+</div>
+
 @if (recipes == null)
 {
 	<p>Loading...</p>
 }
+else if (!filteredRecipes.Any())
+{
+	<p class="text-muted">No recipes found.</p>
+}
 else
 {
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Recipe</th>
-				<th>Healthy</th>
-				<th>Duration in minutes</th>
-				<th>Ingredients</th>
-				<th>Created</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var recipe in recipes)
-			{
-				<tr>
-					<td>
-						<a href="" @onclick="@(() => NavigateToRecipe(recipe.Id))" @onclick:preventDefault>@recipe.Name</a>
-					</td>
-					<td>@recipe.HealthyStatus</td>
-					<td>@recipe.DurationInMinutes</td>
-					<td>@recipe.Ingredients.Count()</td>
-					<td>@recipe.CreatedOn.ToShortDateString()</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+	<div class="row">
+		@foreach (var recipe in filteredRecipes)
+		{
+			<div class="col-12 col-md-6 col-lg-4 mb-3">
+				<div class="card h-100 border-0 shadow-sm">
+					<div class="card-body">
+						<div class="d-flex justify-content-between align-items-center">
+							<h5 class="card-title mb-1">@recipe.Name</h5>
+							<span class="badge badge-@GetHealthBadge(recipe.HealthyStatus)">@recipe.HealthyStatus</span>
+						</div>
+						<p class="card-subtitle text-muted small mb-2">Created @recipe.CreatedOn.ToShortDateString()</p>
+						<p class="mb-2">Ingredients: <strong>@recipe.Ingredients.Count()</strong></p>
+						<p class="mb-3">Duration: <strong>@recipe.DurationInMinutes</strong> min</p>
+						<button class="btn btn-sm btn-outline-light"
+							@onclick="@(() => NavigateToRecipe(recipe.Id))">View</button>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
 }
 
 @code {
 	[Parameter]
-	public RecipeModel[] recipes { get; set; }	
+	public RecipeModel[] recipes { get; set; }
+
+	private string searchText;
+	private IEnumerable<RecipeModel> filteredRecipes =>
+	string.IsNullOrWhiteSpace(searchText)
+	? recipes
+	: recipes.Where(r => r.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true);
+
+	private string GetHealthBadge(HealthyStatus status) => status == HealthyStatus.Healthy ? "success" : "danger";
 
 	private void NavigateToRecipe(int id)
 	{
 		NavigationManager.NavigateTo($"recipe/{id}");
+	}
+
+	private void NavigateToCreate()
+	{
+		NavigationManager.NavigateTo("recipe/new");
 	}
 }

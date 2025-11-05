@@ -1,3 +1,57 @@
+:root {
+  --primary: #6a5acd; /* slate blue */
+  --primary-dark: #5847c1;
+  --accent: #ffb703;
+  --bg: #0e0f13;
+  --surface: #151823;
+  --text: #e6e6f0;
+  --muted: #a2a6b3;
+}
+
+html, body {
+  height: 100%;
+}
+
 body {
-  color: black;
-  background-color: white; }
+  background: linear-gradient(180deg, var(--bg) 0%, #0f1220 100%);
+  color: var(--text);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+.navbar-brand {
+  letter-spacing: 0.5px;
+}
+
+.card {
+  background-color: var(--surface);
+  color: var(--text);
+}
+
+.table thead th {
+  border-color: rgba(255,255,255,0.08);
+}
+
+.table td, .table th {
+  border-color: rgba(255,255,255,0.06);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+a, .nav-link {
+  color: #d6d9ff;
+}
+
+a:hover, .nav-link:hover {
+  color: white;
+}

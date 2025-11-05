@@ -1,57 +1,205 @@
+# Azure DevOps Pipeline for Azure App Service Deployment with Slot Swapping
+# This pipeline prevents cold starts by deploying to staging slot, warming up, then swapping
+
 trigger:
-- main
+  branches:
+    include:
+    - main
+    - develop
 
 pool:
-  vmImage: 'ubuntu-latest'
-#Your build pipeline references an undefined variable named ‘Parameters.RestoreBuildProjects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#Your build pipeline references an undefined variable named ‘Parameters.RestoreBuildProjects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
-#Your build pipeline references an undefined variable named ‘Parameters.TestProjects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
-#Your build pipeline references an undefined variable named ‘Parameters.RestoreBuildProjects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
+  vmImage: 'windows-latest'
+
 variables:
   buildConfiguration: 'Release'
-  Parameters.RestoreBuildProjects: '**/*.csproj'
-  Parameters.TestProjects: '**/*Tests/*.csproj'
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  # Azure App Service details - Set these in Azure DevOps Variables or Pipeline Variables
+  # azureSubscription: 'Your-Azure-Service-Connection-Name'
+  # appServiceName: 'Your-App-Service-Name'
+  # resourceGroupName: 'Your-Resource-Group-Name'
+  # stagingSlotName: 'staging'
   
-steps:
-- task: UseDotNet@2
-  displayName: ".NET Core 3.1.x"
-  inputs:
-     version: '3.1.x'
-     packageType: sdk
-     
-- task: DotNetCoreCLI@2
-  displayName: Restore
-  inputs:
-    command: restore
-    projects: '$(Parameters.RestoreBuildProjects)'
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build Application'
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET 9.0 SDK'
+      inputs:
+        packageType: 'sdk'
+        version: '9.0.x'
+        installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    projects: '$(Parameters.RestoreBuildProjects)'
-    arguments: '--configuration $(BuildConfiguration)'
+    - task: NuGetCommand@2
+      displayName: 'NuGet Restore'
+      inputs:
+        restoreSolution: '$(solution)'
 
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: test
-    projects: '$(Parameters.TestProjects)'
-    arguments: '--configuration $(BuildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'Build Solution'
+      inputs:
+        command: 'build'
+        projects: '$(solution)'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
 
-- task: DotNetCoreCLI@2
-  displayName: Publish
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '$(Parameters.RestoreBuildProjects)'
-    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
-    zipAfterPublish: True
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish Web App'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: 'AccountOwnerServer/AccountOwnerServer.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/AccountOwnerServer --no-build'
+        zipAfterPublish: false
+        modifyOutputPath: false
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
-  condition: succeededOrFailed()
+    - task: ArchiveFiles@2
+      displayName: 'Archive Published Files'
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/AccountOwnerServer'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: DeployStaging
+  displayName: 'Deploy to Staging Slot'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: DeployToStaging
+    displayName: 'Deploy to Staging Slot'
+    environment: 'Staging'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Deploy to Staging Slot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appName: '$(appServiceName)'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              deploymentMethod: 'auto'
+              deployToSlotOrASE: true
+              resourceGroupName: '$(resourceGroupName)'
+              slotName: '$(stagingSlotName)'
+              startUpCommand: ''
+
+          - task: AzureCLI@2
+            displayName: 'Warm Up Staging Slot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Starting warm-up process for staging slot..."
+                
+                # Get the staging slot URL
+                STAGING_URL="https://$(appServiceName)-$(stagingSlotName).azurewebsites.net"
+                
+                # Wait for deployment to complete
+                echo "Waiting for deployment to initialize..."
+                sleep 30
+                
+                # Warm-up health check endpoints
+                echo "Warming up application..."
+                MAX_RETRIES=10
+                RETRY_COUNT=0
+                SUCCESS=false
+                
+                while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$STAGING_URL/health" || echo "000")
+                  
+                  if [ "$HTTP_CODE" = "200" ]; then
+                    echo "Health check passed!"
+                    SUCCESS=true
+                    break
+                  fi
+                  
+                  RETRY_COUNT=$((RETRY_COUNT+1))
+                  echo "Attempt $RETRY_COUNT failed with HTTP $HTTP_CODE. Retrying in 10 seconds..."
+                  sleep 10
+                done
+                
+                # Warm-up the warmup endpoint to initialize database connections
+                if [ "$SUCCESS" = true ]; then
+                  echo "Calling warmup endpoint to initialize database..."
+                  curl -s --max-time 60 "$STAGING_URL/api/health/warmup" || true
+                  curl -s --max-time 60 "$STAGING_URL/api/health/ready" || true
+                  echo "Warm-up process completed!"
+                else
+                  echo "Warm-up failed after $MAX_RETRIES attempts. Deployment may not be ready."
+                  exit 1
+                fi
+
+- stage: SwapSlots
+  displayName: 'Swap Production and Staging Slots'
+  dependsOn: DeployStaging
+  condition: succeeded()
+  jobs:
+  - deployment: SwapProductionStaging
+    displayName: 'Swap Slots'
+    environment: 'Production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureAppServiceManage@0
+            displayName: 'Swap Staging to Production'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              Action: 'Swap Slots'
+              WebAppName: '$(appServiceName)'
+              ResourceGroupName: '$(resourceGroupName)'
+              SourceSlot: '$(stagingSlotName)'
+              SwapWithProduction: true
+
+          - task: AzureCLI@2
+            displayName: 'Verify Production Slot Health'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Verifying production slot after swap..."
+                
+                PROD_URL="https://$(appServiceName).azurewebsites.net"
+                
+                # Wait for swap to complete
+                echo "Waiting for slot swap to complete..."
+                sleep 15
+                
+                # Verify production is healthy
+                MAX_RETRIES=5
+                RETRY_COUNT=0
+                SUCCESS=false
+                
+                while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$PROD_URL/health" || echo "000")
+                  
+                  if [ "$HTTP_CODE" = "200" ]; then
+                    echo "Production slot health check passed!"
+                    SUCCESS=true
+                    break
+                  fi
+                  
+                  RETRY_COUNT=$((RETRY_COUNT+1))
+                  echo "Attempt $RETRY_COUNT failed with HTTP $HTTP_CODE. Retrying in 10 seconds..."
+                  sleep 10
+                done
+                
+                if [ "$SUCCESS" = false ]; then
+                  echo "Production slot verification failed!"
+                  exit 1
+                fi

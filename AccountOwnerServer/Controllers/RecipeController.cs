@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 namespace AccountOwnerServer.Controllers
 {
 	[ApiController]
-    [Route("[controller]")]
-    public class RecipeController : ControllerBase
+	[Route("api/[controller]")]
+	public class RecipeController : ControllerBase
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -35,8 +35,10 @@ namespace AccountOwnerServer.Controllers
 					CreatedOn = s.CreatedOn,
 					UpdatedOn = s.UpdatedOn,
 					DurationInMinutes = s.DurationInMinutes,
-					Ingredients = s.RecipeIngredients.Select(ri => 
-						new IngredientViewModel { 
+					HealthyStatus = s.HealthyStatus,
+					Ingredients = s.RecipeIngredients.Select(ri =>
+						new IngredientViewModel
+						{
 							Id = ri.IngredientId,
 							Name = ri.Ingredient.Name,
 							Quantity = ri.Ingredient.Quantity,
@@ -62,6 +64,7 @@ namespace AccountOwnerServer.Controllers
 					CreatedOn = r.CreatedOn,
 					UpdatedOn = r.UpdatedOn,
 					DurationInMinutes = r.DurationInMinutes,
+					HealthyStatus = r.HealthyStatus,
 					Ingredients = r.RecipeIngredients.Select(ri => new IngredientViewModel
 					{
 						Id = ri.IngredientId,
@@ -83,7 +86,7 @@ namespace AccountOwnerServer.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError,
 					"Error retrieving data from the database");
 			}
-			
+
 		}
 
 		[HttpPost]
@@ -100,8 +103,8 @@ namespace AccountOwnerServer.Controllers
 					CreatedOn = DateTime.UtcNow
 				};
 				_context.Recipes.Add(recipe);
-								
-				foreach(var ingredient in model.Ingredients)
+
+				foreach (var ingredient in model.Ingredients)
 				{
 					var ing = new Ingredient
 					{
@@ -125,6 +128,44 @@ namespace AccountOwnerServer.Controllers
 			}
 
 			return false;
+		}
+
+		[HttpPut("{id:int}")]
+		public async Task<ActionResult<bool>> UpdateRecipe(int id, [FromBody] RecipeInputModel model)
+		{
+			var recipe = await _context.Recipes.Include(r => r.Ingredients)
+				.FirstOrDefaultAsync(r => r.Id == id);
+			if (recipe == null) return NotFound();
+
+			recipe.Name = model.Name;
+			recipe.DurationInMinutes = model.DurationInMinutes;
+			recipe.HealthyStatus = model.HealthyStatus;
+			recipe.UpdatedOn = DateTime.UtcNow;
+
+			var existingIngredients = _context.Ingredients.Where(i => i.RecipeId == id);
+			_context.Ingredients.RemoveRange(existingIngredients);
+			var existingLinks = _context.RecipeIngredients.Where(ri => ri.RecipeId == id);
+			_context.RecipeIngredients.RemoveRange(existingLinks);
+
+			foreach (var ingredient in model.Ingredients)
+			{
+				var ing = new Ingredient
+				{
+					Recipe = recipe,
+					Name = ingredient.Name,
+					Quantity = ingredient.Quantity,
+					UnityOfMeasure = ingredient.UnityOfMeasure,
+					CreatedOn = DateTime.UtcNow
+				};
+				_context.Ingredients.Add(ing);
+				_context.RecipeIngredients.Add(new RecipeIngredient
+				{
+					Recipe = recipe,
+					Ingredient = ing
+				});
+			}
+
+			return await _context.SaveChangesAsync() > 0;
 		}
 	}
 }

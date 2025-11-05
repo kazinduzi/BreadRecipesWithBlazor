@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.EntityFrameworkCore.Sqlite;
 
 namespace AccountOwnerServer
 {
@@ -19,7 +19,7 @@ namespace AccountOwnerServer
 	{
 		public Startup(IConfiguration configuration)
 		{
-			LogManager.LoadConfiguration(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
+			LogManager.Setup().LoadConfigurationFromFile(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
 			Configuration = configuration;
 		}
 
@@ -27,16 +27,17 @@ namespace AccountOwnerServer
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDbContextPool<ApplicationDbContext>(options => options				
-				.UseMySql(Configuration.GetConnectionString("MyDefaultConnection"), mySqlOptions => mySqlOptions					
-					.ServerVersion(new Version(5, 7, 9), ServerType.MySql)
-					.EnableRetryOnFailure()
-
-			));
+			services.AddDbContextPool<ApplicationDbContext>(options =>
+				options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
+			);
 
 			services.ConfigureLoggerService();
 			services.ConfigureCors();
-			
+
+			// Add health checks for warm-up and slot swapping
+			services.AddHealthChecks()
+				.AddDbContextCheck<ApplicationDbContext>();
+
 			services.AddControllers();
 		}
 
@@ -66,6 +67,8 @@ namespace AccountOwnerServer
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
+				// Health check endpoint for Azure App Service
+				endpoints.MapHealthChecks("/health");
 			});
 		}
 	}
