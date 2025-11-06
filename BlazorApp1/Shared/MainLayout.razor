@@ -1,25 +1,35 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+<header class="site-header">
+    <div class="container-app nav-container">
+        <div class="brand">BreadRecipes</div>
+        <nav class="main-nav">
+            <a href="" class="nav-link">Home</a>
+            <a href="counter" class="nav-link">Counter</a>
+            <a href="fetchdata" class="nav-link">Recipes</a>
+        </nav>
+        <div class="cta">
+            <a class="btn btn-primary" href="">Explore</a>
+        </div>
     </div>
+</header>
 
-    <main>
-        <div class="top-row px-4 auth">
-            <div class="container-app hero">
+<main>
+    <section class="hero">
+        <div class="container-app">
+            <div class="hero-inner">
                 <div>
                     <h1>BreadRecipes — Modern Blazor</h1>
-                    <p class="lead">Beautiful recipes, minimal UI, blazing fast WebAssembly.</p>
+                    <p class="lead">Beautiful bread recipes, minimal UI, fast WebAssembly experience.</p>
                 </div>
-                <div class="ms-auto">
-                    <a class="btn btn-primary" href="">Explore</a>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="">Browse Recipes</a>
                 </div>
             </div>
         </div>
+    </section>
 
-        <article class="content px-4 container-app">
-            @Body
-        </article>
-    </main>
-</div>
+    <article class="content container-app">
+        @Body
+    </article>
+</main>
