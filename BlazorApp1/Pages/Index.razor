@@ -1,0 +1,22 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IRecipeService RecipeService
+
+<PageTitle>Index</PageTitle>
+
+<Recipes Recipes="@recipes" />
+
+@code {
+	private IEnumerable<RecipeModel>? recipes;
+
+	protected override async Task OnInitializedAsync()
+	{
+		recipes = await RecipeService.GetRecipesAsync();		
+	}
+
+	private void NavigateToRecipe(int id)
+	{
+		NavigationManager.NavigateTo($"recipe/{id}");
+	}
+}

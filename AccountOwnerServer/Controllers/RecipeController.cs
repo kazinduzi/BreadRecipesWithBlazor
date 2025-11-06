@@ -5,6 +5,7 @@ using AccountOwnerServer.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,16 @@ using System.Threading.Tasks;
 
 namespace AccountOwnerServer.Controllers
 {
+	/// <summary>
+	/// This is comment for cherry-picking in the master
+	/// Other changes
+	/// </summary>
 	[ApiController]
 	[Route("api/[controller]")]
 	public class RecipeController : ControllerBase
 	{
 		private readonly ApplicationDbContext _context;
+		private static Logger _logger = LogManager.GetCurrentClassLogger();
 
 		public RecipeController(ApplicationDbContext context)
 		{
@@ -26,6 +32,8 @@ namespace AccountOwnerServer.Controllers
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<RecipeViewModel>>> Get()
 		{
+			var res = new List<RecipeViewModel>();
+			
 			var recipes = await _context.Recipes.AsNoTracking()
 				.Include(i => i.RecipeIngredients)
 					.ThenInclude(ri => ri.Ingredient)
@@ -190,6 +198,25 @@ namespace AccountOwnerServer.Controllers
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError, "Error updating recipe");
 			}
+		}
+
+		[HttpPut]
+		[Route("update/{id:int}")]
+		public async Task<ActionResult<bool>> UpdateRecipe(int id, [FromBody] RecipeInputModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var recipe = await _context.Recipes.FirstOrDefaultAsync(i => i.Id == id);
+				if (recipe != null)
+				{
+					recipe.Name = model.Name;
+					recipe.DurationInMinutes = model.DurationInMinutes;
+					recipe.HealthyStatus = model.HealthyStatus;
+					recipe.UpdatedOn = DateTime.UtcNow;
+					return await _context.SaveChangesAsync() > 0;
+				}
+			}
+			return false;
 		}
 	}
 }
