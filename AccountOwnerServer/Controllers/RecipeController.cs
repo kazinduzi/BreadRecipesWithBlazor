@@ -147,59 +147,7 @@ namespace AccountOwnerServer.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, "Error creating recipe");
 			}
 		}
-
-		[HttpPut("{id:int}")]
-		public async Task<ActionResult<bool>> UpdateRecipe(int id, [FromBody] RecipeInputModel model)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
-			var recipe = await _context.Recipes
-				.Include(r => r.RecipeIngredients)
-				.FirstOrDefaultAsync(r => r.Id == id);
-			if (recipe == null) return NotFound();
-
-			try
-			{
-				recipe.Name = model.Name;
-				recipe.DurationInMinutes = model.DurationInMinutes;
-				recipe.HealthyStatus = model.HealthyStatus;
-				recipe.UpdatedOn = DateTime.UtcNow;
-
-				var existingIngredients = _context.Ingredients.Where(i => i.RecipeId == id);
-				_context.Ingredients.RemoveRange(existingIngredients);
-				var existingLinks = _context.RecipeIngredients.Where(ri => ri.RecipeId == id);
-				_context.RecipeIngredients.RemoveRange(existingLinks);
-
-				foreach (var ingredient in model.Ingredients ?? new List<IngredientInputModel>())
-				{
-					var ing = new Ingredient
-					{
-						Recipe = recipe,
-						Name = ingredient.Name,
-						Quantity = ingredient.Quantity,
-						UnityOfMeasure = ingredient.UnityOfMeasure,
-						CreatedOn = DateTime.UtcNow
-					};
-					_context.Ingredients.Add(ing);
-					_context.RecipeIngredients.Add(new RecipeIngredient
-					{
-						Recipe = recipe,
-						Ingredient = ing
-					});
-				}
-
-				var saved = await _context.SaveChangesAsync() > 0;
-				return saved ? Ok(true) : StatusCode(StatusCodes.Status500InternalServerError, "Failed to update recipe");
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Error updating recipe");
-			}
-		}
-
+				
 		[HttpPut]
 		[Route("update/{id:int}")]
 		public async Task<ActionResult<bool>> UpdateRecipe(int id, [FromBody] RecipeInputModel model)
