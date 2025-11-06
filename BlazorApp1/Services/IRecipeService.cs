@@ -7,5 +7,9 @@ namespace BreadRecipesWithWasmBlazor.Client.Services
         Task<IEnumerable<RecipeModel>> GetRecipesAsync();
 
         Task<RecipeModel> GetRecipeByIdAsync(int id);
+
+        Task<bool> CreateRecipeAsync(RecipeInputModel model);
+
+        Task<bool> UpdateRecipeAsync(int id, RecipeInputModel model);
     }
 }

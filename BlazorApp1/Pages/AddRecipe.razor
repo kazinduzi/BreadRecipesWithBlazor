@@ -1,0 +1,77 @@
+@page "/add-recipe"
+@inject IRecipeService RecipeService
+@inject NavigationManager NavigationManager
+
+<h3>Add Recipe</h3>
+
+<EditForm Model="model" OnValidSubmit="HandleValidSubmit">
+ <DataAnnotationsValidator />
+ <ValidationSummary />
+
+ <div class="mb-3">
+ <label class="form-label">Name</label>
+ <InputText class="form-control" @bind-Value="model.Name" />
+ </div>
+
+ <div class="mb-3">
+ <label class="form-label">Duration (minutes)</label>
+ <InputNumber class="form-control" @bind-Value="model.DurationInMinutes" />
+ </div>
+
+ <div class="mb-3">
+ <label class="form-label">Healthy Status</label>
+ <InputSelect class="form-select" @bind-Value="model.HealthyStatus">
+ <option value="0">Healthy</option>
+ <option value="1">NotHealthy</option>
+ </InputSelect>
+ </div>
+
+ <h4>Ingredients</h4>
+ @for (int i =0; i < model.Ingredients.Count; i++)
+ {
+ <div class="ingredient-row mb-2 d-flex gap-2">
+ <InputText class="form-control" placeholder="Name" @bind-Value="model.Ingredients[i].Name" />
+ <InputNumber class="form-control" placeholder="Qty" @bind-Value="model.Ingredients[i].Quantity" />
+ <InputText class="form-control" placeholder="Unit" @bind-Value="model.Ingredients[i].UnityOfMeasure" />
+ <button type="button" class="btn btn-outline-danger" @onclick="(() => RemoveIngredient(i))">Remove</button>
+ </div>
+ }
+ <button type="button" class="btn btn-outline-primary mb-3" @onclick="AddIngredient">Add Ingredient</button>
+
+ <div>
+ <button type="submit" class="btn btn-primary">Create Recipe</button>
+ <button type="button" class="btn btn-secondary ms-2" @onclick="Cancel">Cancel</button>
+ </div>
+</EditForm>
+
+@code {
+ private RecipeInputModel model = new RecipeInputModel();
+
+ private async Task HandleValidSubmit()
+ {
+ var success = await RecipeService.CreateRecipeAsync(model);
+ if (success)
+ {
+ NavigationManager.NavigateTo("/");
+ }
+ else
+ {
+ // show error
+ }
+ }
+
+ private void AddIngredient()
+ {
+ model.Ingredients.Add(new IngredientInputModel());
+ }
+
+ private void RemoveIngredient(int idx)
+ {
+ if (idx >=0 && idx < model.Ingredients.Count) model.Ingredients.RemoveAt(idx);
+ }
+
+ private void Cancel()
+ {
+ NavigationManager.NavigateTo("/");
+ }
+}

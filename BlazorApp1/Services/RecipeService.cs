@@ -23,5 +23,17 @@ namespace BreadRecipesWithWasmBlazor.Client.Services
             var recipes = await _httpClient.GetFromJsonAsync<IEnumerable<RecipeModel>>("api/recipe");
             return recipes;
         }
+
+        public async Task<bool> CreateRecipeAsync(RecipeInputModel model)
+        {
+            var resp = await _httpClient.PostAsJsonAsync("api/recipe/create", model);
+            return resp.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateRecipeAsync(int id, RecipeInputModel model)
+        {
+            var resp = await _httpClient.PutAsJsonAsync($"api/recipe/update/{id}", model);
+            return resp.IsSuccessStatusCode;
+        }
     }
 }
