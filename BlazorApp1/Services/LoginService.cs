@@ -1,4 +1,4 @@
-﻿using BreadRecipesWithWasmBlazor.Client.ViewModels;
+using BreadRecipesWithWasmBlazor.Client.ViewModels;
 
 namespace BreadRecipesWithWasmBlazor.Client.Services
 {

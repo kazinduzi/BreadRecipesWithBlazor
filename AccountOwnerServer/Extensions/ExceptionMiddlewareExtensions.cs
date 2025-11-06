@@ -1,15 +1,18 @@
-﻿using AccountOwnerServer.Helpers;
+using System.Net;
+
+using AccountOwnerServer.Helpers;
 using AccountOwnerServer.Middlewares;
+
 using Contracts;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using System.Net;
 
 namespace AccountOwnerServer.Extensions
 {
-	public static class ExceptionMiddlewareExtensions
-	{
+    public static class ExceptionMiddlewareExtensions
+    {
         //Handling Errors Globally with the Built-In Middleware
         public static void ConfigureExceptionHandler(this IApplicationBuilder app, ILoggerManager logger)
         {

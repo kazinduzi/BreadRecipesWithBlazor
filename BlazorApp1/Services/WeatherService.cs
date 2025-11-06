@@ -1,5 +1,6 @@
-﻿using BreadRecipesWithWasmBlazor.Client.ViewModels;
 using System.Net.Http.Json;
+
+using BreadRecipesWithWasmBlazor.Client.ViewModels;
 
 namespace BreadRecipesWithWasmBlazor.Client.Services
 {

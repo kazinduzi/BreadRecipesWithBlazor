@@ -1,5 +1,6 @@
-﻿using BreadRecipesWithWasmBlazor.Client.ViewModels;
 using System.Net.Http.Json;
+
+using BreadRecipesWithWasmBlazor.Client.ViewModels;
 
 namespace BreadRecipesWithWasmBlazor.Client.Services
 {
@@ -12,13 +13,13 @@ namespace BreadRecipesWithWasmBlazor.Client.Services
             _httpClient = httpClientFactory.CreateClient("ServerApi");
         }
 
-		public async Task<RecipeModel> GetRecipeByIdAsync(int id)
-		{
+        public async Task<RecipeModel> GetRecipeByIdAsync(int id)
+        {
             var recipe = await _httpClient.GetFromJsonAsync<RecipeModel>($"api/recipe/{id}");
             return recipe;
-		}
+        }
 
-		public async Task<IEnumerable<RecipeModel>> GetRecipesAsync()
+        public async Task<IEnumerable<RecipeModel>> GetRecipesAsync()
         {
             var recipes = await _httpClient.GetFromJsonAsync<IEnumerable<RecipeModel>>("api/recipe");
             return recipes;

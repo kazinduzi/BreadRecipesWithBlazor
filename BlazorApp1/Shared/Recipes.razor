@@ -1,4 +1,4 @@
-﻿@using SharedLibrary.Constants
+@using SharedLibrary.Constants
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 
@@ -48,20 +48,14 @@ else
                         </div>
 
                         <div class="text-end">
-                            <div class="recipe-meta">
-                                <i class="bi bi-clock"></i> @recipe.DurationInMinutes min
-                            </div>
-                            <div class="recipe-meta">
-                                <i class="bi bi-list-ul"></i> @recipe.Ingredients.Count() ingredients
-                            </div>
+                            <div class="recipe-meta"><i class="bi bi-clock"></i> @recipe.DurationInMinutes min</div>
+                            <div class="recipe-meta"><i class="bi bi-list-ul"></i> @recipe.Ingredients.Count() ingredients</div>
                         </div>
                     </div>
 
                     <div class="mt-3 d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="badge @GetHealthyStatusBadgeClass(recipe.HealthyStatus)">
-                                @recipe.HealthyStatus
-                            </span>
+                            <span class="badge @GetHealthyStatusBadgeClass(recipe.HealthyStatus)">@recipe.HealthyStatus</span>
                         </div>
                         <div>
                             <button class="btn btn-sm btn-outline-secondary me-2" @onclick:stopPropagation @onclick="(() => NavigateToRecipe(recipe.Id))">View</button>
@@ -114,9 +108,12 @@ else
 
     private string GetImageUrl(string recipeName)
     {
-        if (ImageMap.TryGetValue(recipeName, out var url)) return url;
+        if (ImageMap.TryGetValue(recipeName, out var url))
+        {
+            return url;
+        }
 
-        // fallback: use a general bakery image from Unsplash (randomized by name hash)
+        // fallback: use a general bakery image from Unsplash
         var fallback = "https://images.unsplash.com/photo-1515548213413-3d3d2b6f6d2a?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=9e9a7b6c5d4e3f2a1b0c9d8e7f6a5b4c";
         return fallback;
     }

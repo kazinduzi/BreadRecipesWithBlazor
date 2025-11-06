@@ -42,9 +42,25 @@ else
  {
  var ing = ingredientsSnapshot[i];
  <div class="ingredient-row mb-2 d-flex gap-2">
- <input class="form-control" placeholder="Name" value="@ing.Name" @oninput="(ChangeEventArgs e) => SetIngredientName(i, e.Value?.ToString())" />
- <input type="number" class="form-control" placeholder="Qty" value="@ing.Quantity" @oninput="(ChangeEventArgs e) => SetIngredientQuantityFromString(i, e.Value?.ToString())" />
- <input class="form-control" placeholder="Unit" value="@ing.UnityOfMeasure" @oninput="(ChangeEventArgs e) => SetIngredientUnit(i, e.Value?.ToString())" />
+ <input
+ class="form-control"
+ placeholder="Name"
+ value="@ing.Name"
+ @oninput="(ChangeEventArgs e) => SetIngredientName(i, e.Value?.ToString())" />
+
+ <input
+ type="number"
+ class="form-control"
+ placeholder="Qty"
+ value="@ing.Quantity"
+ @oninput="(ChangeEventArgs e) => SetIngredientQuantityFromString(i, e.Value?.ToString())" />
+
+ <input
+ class="form-control"
+ placeholder="Unit"
+ value="@ing.UnityOfMeasure"
+ @oninput="(ChangeEventArgs e) => SetIngredientUnit(i, e.Value?.ToString())" />
+
  <button type="button" class="btn btn-outline-danger" @onclick="(() => RemoveIngredient(i))">Remove</button>
  </div>
  }
@@ -72,14 +88,22 @@ else
  Name = recipe.Name,
  DurationInMinutes = recipe.DurationInMinutes,
  HealthyStatus = recipe.HealthyStatus,
- Ingredients = recipe.Ingredients?.Select(i => new IngredientInputModel { Name = i.Name, Quantity = i.Quantity, UnityOfMeasure = i.UnityOfMeasure }).ToList() ?? new List<IngredientInputModel>()
+ Ingredients = recipe.Ingredients?.Select(i => new IngredientInputModel
+ {
+ Name = i.Name,
+ Quantity = i.Quantity,
+ UnityOfMeasure = i.UnityOfMeasure
+ }).ToList() ?? new List<IngredientInputModel>()
  };
  }
 
  private async Task HandleValidSubmit()
  {
  var success = await RecipeService.UpdateRecipeAsync(Id, model);
- if (success) NavigationManager.NavigateTo("/");
+ if (success)
+ {
+ NavigationManager.NavigateTo("/");
+ }
  }
 
  private void AddIngredient()
@@ -90,31 +114,68 @@ else
 
  private void RemoveIngredient(int idx)
  {
- if (model?.Ingredients == null) return;
- if (idx >=0 && idx < model.Ingredients.Count) model.Ingredients.RemoveAt(idx);
+ if (model?.Ingredients == null)
+ {
+ return;
+ }
+
+ if (idx >=0 && idx < model.Ingredients.Count)
+ {
+ model.Ingredients.RemoveAt(idx);
+ }
  }
 
  private void Cancel() => NavigationManager.NavigateTo("/");
 
  private void SetIngredientName(int idx, string value)
  {
- if (model?.Ingredients == null) return;
- if (idx <0 || idx >= model.Ingredients.Count) return;
+ if (model?.Ingredients == null)
+ {
+ return;
+ }
+
+ if (idx <0 || idx >= model.Ingredients.Count)
+ {
+ return;
+ }
+
  model.Ingredients[idx].Name = value;
  }
 
  private void SetIngredientQuantityFromString(int idx, string value)
  {
- if (model?.Ingredients == null) return;
- if (idx <0 || idx >= model.Ingredients.Count) return;
- if (int.TryParse(value, out var parsed)) model.Ingredients[idx].Quantity = parsed;
- else model.Ingredients[idx].Quantity =0;
+ if (model?.Ingredients == null)
+ {
+ return;
+ }
+
+ if (idx <0 || idx >= model.Ingredients.Count)
+ {
+ return;
+ }
+
+ if (int.TryParse(value, out var parsed))
+ {
+ model.Ingredients[idx].Quantity = parsed;
+ }
+ else
+ {
+ model.Ingredients[idx].Quantity =0;
+ }
  }
 
  private void SetIngredientUnit(int idx, string value)
  {
- if (model?.Ingredients == null) return;
- if (idx <0 || idx >= model.Ingredients.Count) return;
+ if (model?.Ingredients == null)
+ {
+ return;
+ }
+
+ if (idx <0 || idx >= model.Ingredients.Count)
+ {
+ return;
+ }
+
  model.Ingredients[idx].UnityOfMeasure = value;
  }
 }

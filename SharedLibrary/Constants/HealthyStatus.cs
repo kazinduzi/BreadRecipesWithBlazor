@@ -1,8 +1,8 @@
-﻿namespace SharedLibrary.Constants
+namespace SharedLibrary.Constants
 {
-	public enum HealthyStatus
-	{
-		Healthy,
-		NotHealthy
-	}
+    public enum HealthyStatus
+    {
+        Healthy,
+        NotHealthy
+    }
 }
