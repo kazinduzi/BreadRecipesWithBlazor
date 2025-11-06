@@ -14,13 +14,13 @@ namespace BreadRecipesWithWasmBlazor.Client.Services
 
 		public async Task<RecipeModel> GetRecipeByIdAsync(int id)
 		{
-            var recipe = await _httpClient.GetFromJsonAsync<RecipeModel>($"recipe/{id}");
+            var recipe = await _httpClient.GetFromJsonAsync<RecipeModel>($"api/recipe/{id}");
             return recipe;
 		}
 
 		public async Task<IEnumerable<RecipeModel>> GetRecipesAsync()
         {
-            var recipes = await _httpClient.GetFromJsonAsync<IEnumerable<RecipeModel>>("recipe");
+            var recipes = await _httpClient.GetFromJsonAsync<IEnumerable<RecipeModel>>("api/recipe");
             return recipes;
         }
     }

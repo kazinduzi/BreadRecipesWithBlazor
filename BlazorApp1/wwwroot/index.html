@@ -4,15 +4,25 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>BreadRecipes With Blazor</title>
+    <title>BreadRecipes — Modern Blazor</title>
     <base href="/" />
+    <meta name="theme-color" content="#0b3b72" />
+    <!-- Use a modern variable font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="BreadRecipesWithWasmBlazor.Client.styles.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div class="loading-container">
+     <div class="loading-spinner"></div>
+   <h2 class="loading-text animate__animated animate__pulse animate__infinite">Loading BreadRecipes...</h2>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.

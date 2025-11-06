@@ -3,35 +3,39 @@
 
 @if (recipe == null)
 {
-	<p>Loading...</p>
+ <div class="card-modern">
+ <p>Loading...</p>
+ </div>
 }
 else
 {
-	<h2>@recipe.Name</h2>
-	<small>@recipe.CreatedOn.ToLongDateString()</small>
-	<h3>Ingredients</h3>
-	<ul>
-		@foreach(var ingredient in recipe.Ingredients)
-		{
-			<li>
-				<h5>@ingredient.Name</h5>
-				<div>
-					<strong>Quantity: </strong><span>@ingredient.Quantity @ingredient.UnityMeasure</span>
-				</div>				
-			</li>
-		}
-	</ul>
+ <div class="card-modern">
+ <h2 class="recipe-title">@recipe.Name</h2>
+ <small class="recipe-meta">@recipe.CreatedOn.ToLongDateString()</small>
+ <section style="margin-top:.75rem">
+ <h4>Ingredients</h4>
+ <ul>
+ @foreach(var ingredient in recipe.Ingredients ?? Enumerable.Empty<IngredientModel>())
+ {
+ <li>
+ <strong>@ingredient.Name</strong>
+ <div class="recipe-meta">@ingredient.Quantity @ingredient.UnityOfMeasure</div>
+ </li>
+ }
+ </ul>
+ </section>
+ </div>
 }
 
 
 @code {
-	[Parameter]
-	public int Id { get; set; }
+ [Parameter]
+ public int Id { get; set; }
 
-	private RecipeModel recipe;
+ private RecipeModel recipe;
 
-	protected override async Task OnInitializedAsync()
-	{
-		recipe = await RecipeService.GetRecipeByIdAsync(Id);
-	}
+ protected override async Task OnInitializedAsync()
+ {
+ recipe = await RecipeService.GetRecipeByIdAsync(Id);
+ }
 }

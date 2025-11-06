@@ -1,46 +1,84 @@
-﻿@inject HttpClient Http
+﻿@using SharedLibrary.Constants
+@inject HttpClient Http
 @inject NavigationManager NavigationManager
 
 <h3>Recipes</h3>
-@if (recipes == null)
+
+@if (error != null)
 {
-	<p>Loading...</p>
+    <div class="alert alert-danger" role="alert">
+        <strong>Error:</strong> @error
+ </div>
+}
+else if (recipes == null)
+{
+    <div class="loading-container">
+        <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+  </div>
+        <p>Loading recipes...</p>
+    </div>
+}
+else if (!recipes.Any())
+{
+    <div class="alert alert-info" role="alert">
+        No recipes found.
+    </div>
 }
 else
 {
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Recipe</th>
-				<th>Healthy</th>
-				<th>Duration in minutes</th>
-				<th>Ingredients</th>
-				<th>Created</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var recipe in recipes)
-			{
-				<tr>
-					<td>
-						<a href="" @onclick="@(() => NavigateToRecipe(recipe.Id))" @onclick:preventDefault>@recipe.Name</a>
-					</td>
-					<td>@recipe.HealthyStatus</td>
-					<td>@recipe.DurationInMinutes</td>
-					<td>@recipe.Ingredients.Count()</td>
-					<td>@recipe.CreatedOn.ToShortDateString()</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+  <div class="recipe-grid">
+        @foreach (var recipe in recipes)
+     {
+ <div class="recipe-card card-modern" @onclick="(() => NavigateToRecipe(recipe.Id))" style="cursor:pointer">
+    <div class="d-flex justify-content-between align-items-start p-3">
+             <div>
+          <div class="recipe-title h5 mb-2">@recipe.Name</div>
+             <div class="recipe-meta text-muted">
+         <i class="bi bi-calendar"></i> @recipe.CreatedOn.ToShortDateString()
+ </div>
+        <div class="mt-2">
+    <span class="badge @GetHealthyStatusBadgeClass(recipe.HealthyStatus)">
+       @recipe.HealthyStatus
+       </span>
+       </div>
+     </div>
+  <div class="text-end">
+            <div class="recipe-meta">
+            <i class="bi bi-clock"></i> @recipe.DurationInMinutes min
+               </div>
+   <div class="recipe-meta">
+        <i class="bi bi-list-ul"></i> @recipe.Ingredients.Count() ingredients
+              </div>
+      </div>
+                </div>
+         </div>
+        }
+    </div>
 }
 
 @code {
-	[Parameter]
-	public IEnumerable<RecipeModel> recipes { get; set; }	
+    [Parameter]
+  public IEnumerable<RecipeModel> recipes { get; set; }
+    private string error;
 
-	private void NavigateToRecipe(int id)
-	{
-		NavigationManager.NavigateTo($"recipe/{id}");
-	}
+    private void NavigateToRecipe(int id)
+ {
+        try
+        {
+ NavigationManager.NavigateTo($"recipe/{id}");
+     }
+        catch (Exception ex)
+        {
+   error = "Unable to navigate to recipe details.";
+            Console.Error.WriteLine($"Navigation error: {ex.Message}");
+   }
+    }
+
+    private string GetHealthyStatusBadgeClass(HealthyStatus status) => status switch
+    {
+        HealthyStatus.Healthy => "badge-success",
+        HealthyStatus.NotHealthy => "badge-danger",
+        _ => "badge-secondary"
+    };
 }
