@@ -3,118 +3,118 @@
 @inject NavigationManager NavigationManager
 
 <h3 class="d-flex align-items-center justify-content-between">
-    <span>Recipes</span>
-    <a class="btn btn-outline-primary" href="/add-recipe">Add Recipe</a>
+	<span>Recipes</span>
+	<a class="btn btn-outline-primary" href="/add-recipe">Add Recipe</a>
 </h3>
 
 @if (error != null)
 {
-    <div class="alert alert-danger" role="alert">
-        <strong>Error:</strong> @error
-    </div>
+	<div class="alert alert-danger" role="alert">
+		<strong>Error:</strong> @error
+	</div>
 }
 else if (recipes == null)
 {
-    <div class="loading-container">
-        <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <p>Loading recipes...</p>
-    </div>
+	<div class="loading-container">
+		<div class="spinner-border text-primary" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+		<p>Loading recipes...</p>
+	</div>
 }
 else if (!recipes.Any())
 {
-    <div class="alert alert-info" role="alert">
-        No recipes found.
-    </div>
+	<div class="alert alert-info" role="alert">
+		No recipes found.
+	</div>
 }
 else
 {
-    <div class="recipe-grid">
-        @foreach (var recipe in recipes)
-        {
-            <div class="recipe-card card-modern">
-                <div class="recipe-image-container" @onclick="(() => NavigateToRecipe(recipe.Id))" style="cursor:pointer">
-                    <img class="recipe-image" src="@GetImageUrl(recipe.Name)" alt="@recipe.Name" />
-                </div>
+	<div class="recipe-grid">
+	@foreach (var recipe in recipes)
+	{
+		<div class="recipe-card card-modern">
+			<div class="recipe-image-container" @onclick="(() => NavigateToRecipe(recipe.Id))" style="cursor:pointer">
+				<img class="recipe-image" src="@GetImageUrl(recipe.Name)" alt="@recipe.Name" />
+			</div>
 
-                <div class="p-3">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="recipe-title h5 mb-2">@recipe.Name</div>
-                            <div class="recipe-meta text-muted">
-                                <i class="bi bi-calendar"></i> @recipe.CreatedOn.ToShortDateString()
-                            </div>
-                        </div>
+			<div class="p-3">
+				<div class="d-flex justify-content-between align-items-start">
+					<div>
+						<div class="recipe-title h5 mb-2">@recipe.Name</div>
+						<div class="recipe-meta text-muted">
+							<i class="bi bi-calendar"></i> @recipe.CreatedOn.ToShortDateString()
+						</div>
+					</div>
 
-                        <div class="text-end">
-                            <div class="recipe-meta"><i class="bi bi-clock"></i> @recipe.DurationInMinutes min</div>
-                            <div class="recipe-meta"><i class="bi bi-list-ul"></i> @recipe.Ingredients.Count() ingredients</div>
-                        </div>
-                    </div>
+					<div class="text-end">
+						<div class="recipe-meta"><i class="bi bi-clock"></i> @recipe.DurationInMinutes min</div>
+						<div class="recipe-meta"><i class="bi bi-list-ul"></i> @recipe.Ingredients.Count() ingredients</div>
+					</div>
+				</div>
 
-                    <div class="mt-3 d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="badge @GetHealthyStatusBadgeClass(recipe.HealthyStatus)">@recipe.HealthyStatus</span>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-secondary me-2" @onclick:stopPropagation @onclick="(() => NavigateToRecipe(recipe.Id))">View</button>
-                            <button class="btn btn-sm btn-primary" @onclick:stopPropagation @onclick="(() => NavigateToEdit(recipe.Id))">Edit</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+				<div class="mt-3 d-flex justify-content-between align-items-center">
+					<div>
+						<span class="badge @GetHealthyStatusBadgeClass(recipe.HealthyStatus)">@recipe.HealthyStatus</span>
+					</div>
+					<div>
+						<button class="btn btn-sm btn-outline-secondary me-2" @onclick:stopPropagation @onclick="(() => NavigateToRecipe(recipe.Id))">View</button>
+						<button class="btn btn-sm btn-primary" @onclick:stopPropagation @onclick="(() => NavigateToEdit(recipe.Id))">Edit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+	</div>
 }
 
 @code {
-    [Parameter]
-    public IEnumerable<RecipeModel> recipes { get; set; }
+	[Parameter]
+	public IEnumerable<RecipeModel> recipes { get; set; }
 
-    private string error;
+	private string error;
 
-    private void NavigateToRecipe(int id)
-    {
-        try
-        {
-            NavigationManager.NavigateTo($"recipe/{id}");
-        }
-        catch (Exception ex)
-        {
-            error = "Unable to navigate to recipe details.";
-            Console.Error.WriteLine($"Navigation error: {ex.Message}");
-        }
-    }
+	private void NavigateToRecipe(int id)
+	{
+		try
+		{
+			NavigationManager.NavigateTo($"recipe/{id}");
+		}
+		catch (Exception ex)
+		{
+			error = "Unable to navigate to recipe details.";
+			Console.Error.WriteLine($"Navigation error: {ex.Message}");
+		}
+	}
 
-    private void NavigateToEdit(int id)
-    {
-        NavigationManager.NavigateTo($"/edit-recipe/{id}");
-    }
+	private void NavigateToEdit(int id)
+	{
+		NavigationManager.NavigateTo($"/edit-recipe/{id}");
+	}
 
-    private string GetHealthyStatusBadgeClass(HealthyStatus status) => status switch
-    {
-        HealthyStatus.Healthy => "badge-success",
-        HealthyStatus.NotHealthy => "badge-danger",
-        _ => "badge-secondary"
-    };
+	private string GetHealthyStatusBadgeClass(HealthyStatus status) => status switch
+	{
+		HealthyStatus.Healthy => "badge-success",
+		HealthyStatus.NotHealthy => "badge-danger",
+		_ => "badge-secondary"
+	};
 
-    private static readonly Dictionary<string, string> ImageMap = new()
-    {
-        { "Sourdough Bread", "https://images.unsplash.com/photo-1546554137-f86b9593a222?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=5c9fefc8b1b3f6a1c9f4e3ec2d3b7a9f" },
-        { "Whole Wheat Loaf", "https://images.unsplash.com/photo-1606756797070-8b7b19f3d5f8?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=6f6d9a7a9b3c7f1a2b3c4d5e6f7a8b9c" },
-        { "Cinnamon Rolls", "https://images.unsplash.com/photo-1542826438-0fe66b7e0f60?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=3d6f6e8b9c1a2b3c4d5e6f7a8b9c0d1e" }
-    };
+	private static readonly Dictionary<string, string> ImageMap = new()
+	{
+		{ "Sourdough Bread", "https://images.unsplash.com/photo-1546554137-f86b9593a222?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=5c9fefc8b1b3f6a1c9f4e3ec2d3b7a9f" },
+		{ "Whole Wheat Loaf", "https://images.unsplash.com/photo-1606756797070-8b7b19f3d5f8?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=6f6d9a7a9b3c7f1a2b3c4d5e6f7a8b9c" },
+		{ "Cinnamon Rolls", "https://images.unsplash.com/photo-1542826438-0fe66b7e0f60?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=3d6f6e8b9c1a2b3c4d5e6f7a8b9c0d1e" }
+	};
 
-    private string GetImageUrl(string recipeName)
-    {
-        if (ImageMap.TryGetValue(recipeName, out var url))
-        {
-            return url;
-        }
+	private string GetImageUrl(string recipeName)
+	{
+		if (ImageMap.TryGetValue(recipeName, out var url))
+		{
+			return url;
+		}
 
-        // fallback: use a general bakery image from Unsplash
-        var fallback = "https://images.unsplash.com/photo-1515548213413-3d3d2b6f6d2a?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=9e9a7b6c5d4e3f2a1b0c9d8e7f6a5b4c";
-        return fallback;
-    }
+		// fallback: use a general bakery image from Unsplash
+		var fallback = "https://images.unsplash.com/photo-1515548213413-3d3d2b6f6d2a?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=9e9a7b6c5d4e3f2a1b0c9d8e7f6a5b4c";
+		return fallback;
+	}
 }

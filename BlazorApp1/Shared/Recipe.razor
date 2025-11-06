@@ -1,41 +1,41 @@
-﻿@page "/recipe/{id:int}"
+@page "/recipe/{id:int}"
 @inject IRecipeService RecipeService
 
 @if (recipe == null)
 {
- <div class="card-modern">
- <p>Loading...</p>
- </div>
+	<div class="card-modern">
+		<p>Loading...</p>
+	</div>
 }
 else
 {
- <div class="card-modern">
- <h2 class="recipe-title">@recipe.Name</h2>
- <small class="recipe-meta">@recipe.CreatedOn.ToLongDateString()</small>
- <section style="margin-top:.75rem">
- <h4>Ingredients</h4>
- <ul>
- @foreach(var ingredient in recipe.Ingredients ?? Enumerable.Empty<IngredientModel>())
- {
- <li>
- <strong>@ingredient.Name</strong>
- <div class="recipe-meta">@ingredient.Quantity @ingredient.UnityOfMeasure</div>
- </li>
- }
- </ul>
- </section>
- </div>
+	<div class="card-modern">
+		<h2 class="recipe-title">@recipe.Name</h2>
+		<small class="recipe-meta">@recipe.CreatedOn.ToLongDateString()</small>
+		<section style="margin-top:.75rem">
+			<h4>Ingredients</h4>
+			<ul>
+				@foreach (var ingredient in recipe.Ingredients ?? Enumerable.Empty<IngredientModel>())
+				{
+					<li>
+						<strong>@ingredient.Name</strong>
+						<div class="recipe-meta">@ingredient.Quantity @ingredient.UnityOfMeasure</div>
+					</li>
+				}
+			</ul>
+		</section>
+	</div>
 }
 
 
 @code {
- [Parameter]
- public int Id { get; set; }
+	[Parameter]
+	public int Id { get; set; }
 
- private RecipeModel recipe;
+	private RecipeModel recipe;
 
- protected override async Task OnInitializedAsync()
- {
- recipe = await RecipeService.GetRecipeByIdAsync(Id);
- }
+	protected override async Task OnInitializedAsync()
+	{
+		recipe = await RecipeService.GetRecipeByIdAsync(Id);
+	}
 }
