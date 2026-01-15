@@ -285,6 +285,10 @@ ServiceFabricBackup/
 *.ndf
 #My Sqlite DB
 *.db
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
 
 # Business Intelligence projects
 *.rdl.data
