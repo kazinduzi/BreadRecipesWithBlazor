@@ -1,29 +1,35 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-	<a class="navbar-brand" href="">BreadRecipes With Blazor</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+﻿<nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary shadow-lg">
+    <a class="navbar-brand font-weight-bold d-flex align-items-center" href="">
+        <i class="oi oi-bread-slice mr-2" style="font-size: 1.5rem;"></i>
+        Bread Recipes
+    </a>
+    <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-</div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </li>        
-    </ul>
-</div>
+    <div class="collapse navbar-collapse @(collapseNavMenu ? string.Empty : "show")">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <NavLink class="nav-link d-flex align-items-center" href="" Match="NavLinkMatch.All">
+                    <i class="oi oi-home mr-1"></i> Home
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link d-flex align-items-center" href="recipe/new">
+                    <i class="oi oi-plus mr-1"></i> Create Recipe
+                </NavLink>
+            </li>
+        </ul>
+        <span class="navbar-text text-light small d-none d-md-block">
+            <i class="oi oi-code"></i> Made with Blazor WebAssembly
+        </span>
+    </div>
+</nav>
 
 @code {
     private bool collapseNavMenu = true;
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
 
     private void ToggleNavMenu()
     {

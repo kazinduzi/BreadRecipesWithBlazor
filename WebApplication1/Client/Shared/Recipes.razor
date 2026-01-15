@@ -1,47 +1,128 @@
 ﻿@inject HttpClient Http
 @inject NavigationManager NavigationManager
-@*@using ViewModels*@
+@using ViewModels
+@using SharedLibrary.Constants
+@using System
+@using System.Linq
 
-<h3>Recipes</h3>
+<div class="recipes-header mb-4">
+	<div class="d-flex align-items-center flex-wrap">
+		<div class="flex-grow-1 mb-2 mb-md-0">
+			<h2 class="mb-1">
+				<i class="oi oi-book"></i> Bread Recipes
+			</h2>
+			<p class="text-muted mb-0">Discover and share amazing bread recipes</p>
+		</div>
+		<div class="d-flex align-items-center gap-2">
+			<div class="search-container">
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text bg-white border-right-0"><i class="oi oi-magnifying-glass"></i></span>
+					</div>
+					<input class="form-control border-left-0" placeholder="Search recipes..."
+						@bind="searchText" @bind:event="oninput" />
+				</div>
+			</div>
+			<button class="btn btn-primary btn-lg" @onclick="NavigateToCreate">
+				<i class="oi oi-plus"></i> Add Recipe
+			</button>
+		</div>
+	</div>
+	@if (recipes != null && recipes.Length > 0)
+	{
+		<div class="mt-2">
+			<span class="badge badge-info">@recipes.Length recipe@(recipes.Length != 1 ? "s" : "")</span>
+		</div>
+	}
+</div>
+
 @if (recipes == null)
 {
 	<p>Loading...</p>
 }
+	else if (!filteredRecipes.Any())
+	{
+		<div class="text-center py-5">
+			<i class="oi oi-magnifying-glass" style="font-size: 3rem; color: var(--muted);"></i>
+			<p class="text-muted mt-3">
+				@if (string.IsNullOrWhiteSpace(searchText))
+				{
+					<span>No recipes available. Create your first recipe!</span>
+				}
+				else
+				{
+					<span>No recipes found matching "@searchText"</span>
+				}
+			</p>
+			@if (string.IsNullOrWhiteSpace(searchText))
+			{
+				<button class="btn btn-primary mt-2" @onclick="NavigateToCreate">
+					<i class="oi oi-plus"></i> Create Recipe
+				</button>
+			}
+		</div>
+	}
 else
 {
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Recipe</th>
-				<th>Healthy</th>
-				<th>Duration in minutes</th>
-				<th>Ingredients</th>
-				<th>Created</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var recipe in recipes)
-			{
-				<tr>
-					<td>
-						<a href="" @onclick="@(() => NavigateToRecipe(recipe.Id))" @onclick:preventDefault>@recipe.Name</a>
-					</td>
-					<td>@recipe.HealthyStatus</td>
-					<td>@recipe.DurationInMinutes</td>
-					<td>@recipe.Ingredients.Count()</td>
-					<td>@recipe.CreatedOn.ToShortDateString()</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+	<div class="row">
+		@foreach (var recipe in filteredRecipes)
+		{
+			<div class="col-12 col-md-6 col-lg-4 mb-4">
+				<div class="recipe-card card h-100 border-0 shadow-sm">
+					<div class="card-body d-flex flex-column">
+						<div class="d-flex justify-content-between align-items-start mb-2">
+							<h5 class="card-title mb-0 flex-grow-1">@recipe.Name</h5>
+							<span class="badge badge-@GetHealthBadge(recipe.HealthyStatus) badge-pill ml-2">
+								@recipe.HealthyStatus
+							</span>
+						</div>
+						<p class="card-subtitle text-muted small mb-3">
+							<i class="oi oi-calendar"></i> @recipe.CreatedOn.ToShortDateString()
+						</p>
+						<div class="recipe-stats mb-3">
+							<div class="stat-item">
+								<i class="oi oi-list"></i> 
+								<span>@(recipe.Ingredients?.Count() ?? 0) ingredient@((recipe.Ingredients?.Count() ?? 0) != 1 ? "s" : "")</span>
+							</div>
+							<div class="stat-item">
+								<i class="oi oi-clock"></i> 
+								<span>@recipe.DurationInMinutes min</span>
+							</div>
+						</div>
+						<div class="mt-auto">
+							<button class="btn btn-primary w-100"
+								@onclick="@(() => NavigateToRecipe(recipe.Id))">
+								<i class="oi oi-eye"></i> View Recipe
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
 }
 
 @code {
 	[Parameter]
-	public RecipeModel[] recipes { get; set; }	
+	public RecipeModel[] recipes { get; set; }
+
+	private string searchText;
+	private IEnumerable<RecipeModel> filteredRecipes =>
+		recipes == null 
+			? Enumerable.Empty<RecipeModel>()
+			: string.IsNullOrWhiteSpace(searchText)
+				? recipes
+				: recipes.Where(r => r.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true);
+
+	private string GetHealthBadge(HealthyStatus status) => status == HealthyStatus.Healthy ? "success" : "danger";
 
 	private void NavigateToRecipe(int id)
 	{
 		NavigationManager.NavigateTo($"recipe/{id}");
+	}
+
+	private void NavigateToCreate()
+	{
+		NavigationManager.NavigateTo("recipe/new");
 	}
 }

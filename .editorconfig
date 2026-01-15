@@ -1,0 +1,64 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs}]
+indent_style = space
+indent_size =4
+continuation_indent_size =4
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = true
+
+# var preferences
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+# Qualification preferences
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+
+# Braces and newlines
+csharp_prefer_braces = true:warning
+csharp_new_line_before_open_brace_types = true:suggestion
+csharp_new_line_before_open_brace_methods = true:suggestion
+csharp_new_line_before_open_brace_properties = true:suggestion
+csharp_new_line_before_open_brace_accessors = true:suggestion
+csharp_new_line_before_open_brace_anonymous_methods = true:suggestion
+csharp_new_line_before_open_brace_control_blocks = true:suggestion
+csharp_new_line_before_open_brace_anonymous_types = false:silent
+csharp_new_line_before_open_brace_lambda_expression_body = false:silent
+
+# Expression bodied members
+csharp_style_expression_bodied_methods = false:suggestion
+csharp_style_expression_bodied_constructors = false:suggestion
+csharp_style_expression_bodied_properties = false:suggestion
+csharp_style_expression_bodied_operators = false:suggestion
+csharp_style_expression_bodied_accessors = false:suggestion
+
+# Pattern and tuple preferences
+csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
+csharp_style_inlined_variable_declaration = true:suggestion
+csharp_style_throw_expression = true:suggestion
+csharp_prefer_simple_default_expression = true:suggestion
+
+# Misc
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_require_accessibility_modifiers = always:suggestion
+
+# Razor/HTML formatting
+[*.{razor,cshtml,html}]
+indent_style = space
+indent_size =4
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length =180
+
+# Naming: PascalCase for types and methods, camelCase for parameters
+# (Project-specific naming rules can be added below)

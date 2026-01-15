@@ -1,68 +1,79 @@
 using System;
 using System.IO;
+
 using AccountOwnerServer.Data;
 using AccountOwnerServer.Extensions;
+
 using Contracts;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using NLog;
 
 namespace AccountOwnerServer
 {
-	public class Startup
-	{
-		public Startup(IConfiguration configuration)
-		{
-			//LogManager.LoadConfiguration(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
-			LogManager.Setup().LoadConfigurationFromFile(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            LogManager.Setup().LoadConfigurationFromFile(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
             Configuration = configuration;
-		}
+        }
 
-		public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services.AddDbContext<ApplicationDbContext>(
-				options => options.UseSqlServer(Configuration.GetConnectionString("MyDefaultConnection")));
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDbContextPool<ApplicationDbContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
+            );
 
-			services.ConfigureLoggerService();
-			services.ConfigureCors();
-			
-			services.AddControllers();
-		}
+            services.ConfigureLoggerService();
+            services.ConfigureCors();
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
-		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-			}
+            // Add health checks for warm-up and slot swapping
+            services.AddHealthChecks()
+                .AddDbContextCheck<ApplicationDbContext>();
 
-			//app.ConfigureExceptionHandler(logger);
-			app.ConfigureCustomExceptionMiddleware();
+            services.AddControllers();
+        }
 
-			app.UseHttpsRedirection();
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
-			app.UseStaticFiles();
-			app.UseCors("CorsPolicy");
-			app.UseForwardedHeaders(new ForwardedHeadersOptions
-			{
-				ForwardedHeaders = ForwardedHeaders.All
-			});
+            //app.ConfigureExceptionHandler(logger);
+            app.ConfigureCustomExceptionMiddleware();
 
-			app.UseRouting();
+            app.UseHttpsRedirection();
 
-			app.UseAuthorization();
+            app.UseStaticFiles();
+            app.UseCors("CorsPolicy");
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All
+            });
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers();
-			});
-		}
-	}
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                // Health check endpoint for Azure App Service
+                endpoints.MapHealthChecks("/health");
+            });
+        }
+    }
 }
