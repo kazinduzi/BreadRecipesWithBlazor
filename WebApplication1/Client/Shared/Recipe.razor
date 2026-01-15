@@ -1,38 +1,170 @@
 ﻿@page "/recipe/{id:int}"
 @inject HttpClient Http
-@*@using ViewModels*@
+@inject NavigationManager NavigationManager
+@using ViewModels
+@using System
+@using System.Linq
+@using System.Net.Http
+@using System.Net.Http.Json
 
-@if (recipe == null)
+@if (isLoading)
 {
-	<p>Loading...</p>
+	<div class="text-center py-5">
+		<div class="spinner-border text-primary" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+		<p class="mt-2 text-muted">Loading recipe...</p>
+	</div>
+}
+else if (errorMessage != null)
+{
+	<div class="alert alert-danger" role="alert">
+		<strong>Error:</strong> @errorMessage
+		<div class="mt-2">
+			<button class="btn btn-sm btn-outline-danger" @onclick="LoadRecipe">Retry</button>
+			<button class="btn btn-sm btn-secondary ml-2" @onclick="GoHome">Go Home</button>
+		</div>
+	</div>
+}
+else if (recipe == null)
+{
+	<div class="alert alert-warning" role="alert">
+		Recipe not found.
+		<button class="btn btn-sm btn-secondary ml-2" @onclick="GoHome">Go Home</button>
+	</div>
 }
 else
 {
-	<h2>@recipe.Name</h2>
-	<small>@recipe.CreatedOn.ToLongDateString()</small>
-	<h3>Ingredients</h3>
-	<ul>
-		@foreach(var ingredient in recipe.Ingredients)
-		{
-			<li>
-				<h5>@ingredient.Name</h5>
-				<div>
-					<strong>Quantity: </strong><span>@ingredient.Quantity @ingredient.UnityMeasure</span>
-				</div>				
-			</li>
-		}
-	</ul>
-}
+	<div class="recipe-detail">
+		<div class="d-flex align-items-center mb-4">
+			<div class="flex-grow-1">
+				<h2 class="mb-1">@recipe.Name</h2>
+				<small class="text-muted">
+					<i class="oi oi-calendar"></i> Created @recipe.CreatedOn.ToLongDateString()
+					@if (recipe.UpdatedOn.HasValue)
+					{
+						<span class="ml-3">Updated @recipe.UpdatedOn.Value.ToLongDateString()</span>
+					}
+				</small>
+			</div>
+			<div class="ml-auto">
+				<button class="btn btn-primary" @onclick="Edit">
+					<i class="oi oi-pencil"></i> Edit
+				</button>
+			</div>
+		</div>
 
+		<div class="recipe-info mb-4">
+			<div class="row">
+				<div class="col-md-4 mb-3">
+					<div class="info-card">
+						<div class="info-icon"><i class="oi oi-clock"></i></div>
+						<div class="info-content">
+							<div class="info-label">Duration</div>
+							<div class="info-value">@recipe.DurationInMinutes min</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 mb-3">
+					<div class="info-card">
+						<div class="info-icon"><i class="oi oi-heart"></i></div>
+						<div class="info-content">
+							<div class="info-label">Health Status</div>
+							<div class="info-value">
+								<span class="badge badge-@(recipe.HealthyStatus == SharedLibrary.Constants.HealthyStatus.Healthy ? "success" : "danger")">
+									@recipe.HealthyStatus
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 mb-3">
+					<div class="info-card">
+						<div class="info-icon"><i class="oi oi-list"></i></div>
+						<div class="info-content">
+							<div class="info-label">Ingredients</div>
+							<div class="info-value">@recipe.Ingredients?.Count() ?? 0</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<h3 class="mb-3">Ingredients</h3>
+		@if (recipe.Ingredients == null || !recipe.Ingredients.Any())
+		{
+			<div class="alert alert-info">No ingredients listed for this recipe.</div>
+		}
+		else
+		{
+			<div class="ingredients-list">
+				@foreach (var ingredient in recipe.Ingredients)
+				{
+					<div class="ingredient-card">
+						<div class="ingredient-name">@ingredient.Name</div>
+						<div class="ingredient-quantity">
+							<strong>@ingredient.Quantity</strong> @ingredient.UnityOfMeasure
+						</div>
+					</div>
+				}
+			</div>
+		}
+	</div>
+}
 
 @code {
 	[Parameter]
-	public int Id { get; set; }
+	public int id { get; set; }
 
 	private RecipeModel recipe;
+	private bool isLoading = true;
+	private string errorMessage;
 
 	protected override async Task OnInitializedAsync()
 	{
-		recipe = await Http.GetFromJsonAsync<RecipeModel>($"/recipe/{Id}");
+		await LoadRecipe();
+	}
+
+	private async Task LoadRecipe()
+	{
+		isLoading = true;
+		errorMessage = null;
+		try
+		{
+			var response = await Http.GetAsync($"api/recipe/{id}");
+			if (response.IsSuccessStatusCode)
+			{
+				recipe = await response.Content.ReadFromJsonAsync<RecipeModel>();
+			}
+			else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+			{
+				errorMessage = "Recipe not found.";
+				recipe = null;
+			}
+			else
+			{
+				errorMessage = $"Failed to load recipe. Status: {response.StatusCode}";
+				recipe = null;
+			}
+		}
+		catch (Exception ex)
+		{
+			errorMessage = $"An error occurred: {ex.Message}";
+			recipe = null;
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+
+	private void Edit()
+	{
+		NavigationManager.NavigateTo($"/recipe/{id}/edit");
+	}
+
+	private void GoHome()
+	{
+		NavigationManager.NavigateTo("/");
 	}
 }

@@ -1,9 +1,12 @@
-﻿using AccountOwnerServer.Helpers;
-using Contracts;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+
+using AccountOwnerServer.Helpers;
+
+using Contracts;
+
+using Microsoft.AspNetCore.Http;
 
 namespace AccountOwnerServer.Middlewares
 {

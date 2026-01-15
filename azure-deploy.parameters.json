@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServiceName": {
+      "value": "breadrecipes-appservice"
+    },
+    "resourceGroupName": {
+      "value": "breadrecipes-rg"
+    },
+    "location": {
+      "value": "East US"
+    },
+    "appServicePlanName": {
+      "value": "breadrecipes-plan"
+    },
+    "appServicePlanSku": {
+      "value": "S1"
+    },
+    "stagingSlotName": {
+      "value": "staging"
+    },
+    "enableAlwaysOn": {
+      "value": true
+    },
+    "enableHttp2": {
+      "value": true
+    },
+    "minTlsVersion": {
+      "value": "1.2"
+    },
+    "healthCheckPath": {
+      "value": "/health"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-﻿namespace BreadRecipesWithWasmBlazor.Client.ViewModels
+namespace BreadRecipesWithWasmBlazor.Client.ViewModels
 {
     public class WeatherForecast
     {

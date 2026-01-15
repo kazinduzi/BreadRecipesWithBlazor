@@ -1,0 +1,15 @@
+{
+  "cloud": {
+    "currentProfile": "AzureCloud"
+  },
+  "moduleAliases": {
+    "br": {
+      "publicRegistry": {
+        "registry": "mcr.microsoft.com",
+        "modulePath": "bicep"
+      }
+    }
+  }
+}
+
+
